@@ -1,0 +1,35 @@
+{
+  "name": "@devkit/cli",
+  "private": true,
+  "version": "0.1.0",
+  "description": "CLI entry point for devkit",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "bin": {
+    "devkit": "./dist/index.js"
+  },
+  "exports": {
+    ".": {
+      "import": "./dist/index.js",
+      "types": "./dist/index.d.ts"
+    }
+  },
+  "scripts": {
+    "build": "tsc",
+    "lint": "biome check src",
+    "test": "vitest run",
+    "typecheck": "tsc --noEmit",
+    "dev": "tsx src/index.ts"
+  },
+  "dependencies": {
+    "@devkit/core": "workspace:*",
+    "commander": "^12.1.0"
+  },
+  "devDependencies": {
+    "typescript": "^5.6.0",
+    "vitest": "^2.1.0",
+    "@biomejs/biome": "^1.9.4",
+    "tsx": "^4.19.2",
+    "@types/node": "^22.0.0"
+  }
+}

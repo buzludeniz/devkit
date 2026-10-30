@@ -1,0 +1,25 @@
+{
+  "name": "@devkit/core",
+  "private": true,
+  "version": "0.1.0",
+  "description": "Core utilities and shared types for devkit",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./dist/index.js",
+      "types": "./dist/index.d.ts"
+    }
+  },
+  "scripts": {
+    "build": "tsc",
+    "lint": "biome check src",
+    "test": "vitest run",
+    "typecheck": "tsc --noEmit"
+  },
+  "devDependencies": {
+    "typescript": "^5.6.0",
+    "vitest": "^2.1.0",
+    "@biomejs/biome": "^1.9.4"
+  }
+}

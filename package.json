@@ -1,0 +1,30 @@
+{
+  "name": "devkit",
+  "private": true,
+  "version": "0.1.0",
+  "description": "Developer productivity CLI with nightly automated commits",
+  "scripts": {
+    "dev": "pnpm --filter devkit-cli dev",
+    "build": "pnpm --filter devkit-core build && pnpm --filter devkit-cli build",
+    "lint": "pnpm --filter devkit-core lint && pnpm --filter devkit-cli lint",
+    "test": "pnpm --filter devkit-core test && pnpm --filter devkit-cli test",
+    "typecheck": "pnpm --filter devkit-core typecheck && pnpm --filter devkit-cli typecheck",
+    "nightly:maintenance": "tsx scripts/run-nightly.ts",
+    "changeset": "changeset",
+    "version": "changeset version",
+    "release": "pnpm build && changeset publish"
+  },
+  "devDependencies": {
+    "@biomejs/biome": "^1.9.4",
+    "@changesets/cli": "^2.27.0",
+    "tsx": "^4.19.2",
+    "typescript": "^5.6.0"
+  },
+  "engines": {
+    "node": ">=20.0.0"
+  },
+  "packageManager": "pnpm@9.0.0",
+  "publishConfig": {
+    "access": "public"
+  }
+}
