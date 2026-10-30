@@ -18,4 +18,10 @@ describe("createProgram", () => {
 		const helloCmd = program.commands.find((cmd) => cmd.name() === "hello");
 		expect(helloCmd).toBeDefined();
 	});
+
+	it("has init command registered", () => {
+		const program = createProgram();
+		const initCmd = program.commands.find((cmd) => cmd.name() === "init");
+		expect(initCmd).toBeDefined();
+	});
 });
