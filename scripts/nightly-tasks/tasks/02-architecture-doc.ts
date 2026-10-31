@@ -2,7 +2,7 @@ import { join } from "node:path";
 import { writeIfChanged } from "../lib/fs.js";
 import { commitAll } from "../lib/git.js";
 import { listWorkspacePackages, repoRoot } from "../lib/repo.js";
-import { BaseTask } from "../task-base.js";
+import { ReportTask } from "../task-base.js";
 
 function dependencyNames(
 	manifest: Record<string, unknown>,
@@ -76,23 +76,14 @@ export async function buildArchitectureDoc(root: string): Promise<string> {
 	return lines.join("\n");
 }
 
-export class ArchitectureDocTask extends BaseTask {
+export class ArchitectureDocTask extends ReportTask {
 	readonly name = "architecture-doc";
 	readonly description =
 		"Regenerate docs/architecture.md from the workspace manifests";
+	readonly reportPath = "docs/architecture.md";
+	readonly commitMessage = "docs: regenerate architecture overview";
 
-	protected async execute(): Promise<string> {
-		const content = await buildArchitectureDoc(repoRoot);
-		const changed = await writeIfChanged(
-			join(repoRoot, "docs/architecture.md"),
-			content,
-		);
-
-		if (!changed) {
-			return "no changes";
-		}
-
-		await commitAll("docs: regenerate architecture overview", repoRoot);
-		return "updated docs/architecture.md";
+	protected async buildReport(): Promise<string> {
+		return buildArchitectureDoc(repoRoot);
 	}
 }

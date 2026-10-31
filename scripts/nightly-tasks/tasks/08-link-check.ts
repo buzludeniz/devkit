@@ -3,7 +3,7 @@ import { dirname, join, resolve } from "node:path";
 import { writeIfChanged } from "../lib/fs.js";
 import { commitAll } from "../lib/git.js";
 import { listFiles, readTextFile, repoRoot } from "../lib/repo.js";
-import { BaseTask } from "../task-base.js";
+import { ReportTask } from "../task-base.js";
 
 export interface BrokenLink {
 	file: string;
@@ -103,23 +103,14 @@ export async function buildLinkReport(root: string): Promise<string> {
 	return lines.join("\n");
 }
 
-export class LinkCheckTask extends BaseTask {
+export class LinkCheckTask extends ReportTask {
 	readonly name = "link-check";
 	readonly description =
 		"Regenerate docs/project/link-report.md for Markdown links";
+	readonly reportPath = "docs/project/link-report.md";
+	readonly commitMessage = "docs: refresh Markdown link report";
 
-	protected async execute(): Promise<string> {
-		const content = await buildLinkReport(repoRoot);
-		const changed = await writeIfChanged(
-			join(repoRoot, "docs/project/link-report.md"),
-			content,
-		);
-
-		if (!changed) {
-			return "no changes";
-		}
-
-		await commitAll("docs: refresh Markdown link report", repoRoot);
-		return "updated docs/project/link-report.md";
+	protected async buildReport(): Promise<string> {
+		return buildLinkReport(repoRoot);
 	}
 }

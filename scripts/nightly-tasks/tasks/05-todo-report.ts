@@ -2,7 +2,7 @@ import { join, relative } from "node:path";
 import { writeIfChanged } from "../lib/fs.js";
 import { commitAll } from "../lib/git.js";
 import { listFiles, readTextFile, repoRoot } from "../lib/repo.js";
-import { BaseTask } from "../task-base.js";
+import { ReportTask } from "../task-base.js";
 
 export interface TodoEntry {
 	file: string;
@@ -86,22 +86,13 @@ export async function buildTodoReport(root: string): Promise<string> {
 	return lines.join("\n");
 }
 
-export class TodoReportTask extends BaseTask {
+export class TodoReportTask extends ReportTask {
 	readonly name = "todo-report";
 	readonly description = "Regenerate docs/project/todos.md from code comments";
+	readonly reportPath = "docs/project/todos.md";
+	readonly commitMessage = "docs: refresh outstanding work report";
 
-	protected async execute(): Promise<string> {
-		const content = await buildTodoReport(repoRoot);
-		const changed = await writeIfChanged(
-			join(repoRoot, "docs/project/todos.md"),
-			content,
-		);
-
-		if (!changed) {
-			return "no changes";
-		}
-
-		await commitAll("docs: refresh outstanding work report", repoRoot);
-		return "updated docs/project/todos.md";
+	protected async buildReport(): Promise<string> {
+		return buildTodoReport(repoRoot);
 	}
 }

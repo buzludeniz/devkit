@@ -9,7 +9,7 @@ import {
 	repoRoot,
 	toPosix,
 } from "../lib/repo.js";
-import { BaseTask } from "../task-base.js";
+import { ReportTask } from "../task-base.js";
 
 interface PackageTestStats {
 	name: string;
@@ -98,23 +98,14 @@ export async function buildTestInventory(root: string): Promise<string> {
 	return lines.join("\n");
 }
 
-export class TestInventoryTask extends BaseTask {
+export class TestInventoryTask extends ReportTask {
 	readonly name = "test-inventory";
 	readonly description =
 		"Regenerate docs/metrics/tests.md with test coverage inventory";
+	readonly reportPath = "docs/metrics/tests.md";
+	readonly commitMessage = "docs: refresh test inventory";
 
-	protected async execute(): Promise<string> {
-		const content = await buildTestInventory(repoRoot);
-		const changed = await writeIfChanged(
-			join(repoRoot, "docs/metrics/tests.md"),
-			content,
-		);
-
-		if (!changed) {
-			return "no changes";
-		}
-
-		await commitAll("docs: refresh test inventory", repoRoot);
-		return "updated docs/metrics/tests.md";
+	protected async buildReport(): Promise<string> {
+		return buildTestInventory(repoRoot);
 	}
 }

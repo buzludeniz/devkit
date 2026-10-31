@@ -10,7 +10,7 @@ import {
 	repoRoot,
 	toPosix,
 } from "../lib/repo.js";
-import { BaseTask } from "../task-base.js";
+import { ReportTask } from "../task-base.js";
 
 interface PackageStatus {
 	name: string;
@@ -119,23 +119,14 @@ export async function buildProjectStatus(root: string): Promise<string> {
 	return JSON.stringify(status, null, 2);
 }
 
-export class ProjectStatusTask extends BaseTask {
+export class ProjectStatusTask extends ReportTask {
 	readonly name = "project-status";
 	readonly description =
 		"Refresh docs/project/status.json with repository statistics";
+	readonly reportPath = "docs/project/status.json";
+	readonly commitMessage = "docs: refresh project status report";
 
-	protected async execute(): Promise<string> {
-		const content = await buildProjectStatus(repoRoot);
-		const changed = await writeIfChanged(
-			join(repoRoot, "docs/project/status.json"),
-			content,
-		);
-
-		if (!changed) {
-			return "no changes";
-		}
-
-		await commitAll("docs: refresh project status report", repoRoot);
-		return "updated docs/project/status.json";
+	protected async buildReport(): Promise<string> {
+		return buildProjectStatus(repoRoot);
 	}
 }

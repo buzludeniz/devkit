@@ -28,3 +28,35 @@ export async function writeIfChanged(
 	await writeFile(filePath, normalised, "utf8");
 	return true;
 }
+
+/**
+ * Records one observation per day in a small CSV history file.
+ *
+ * Re-running the same task on the same day replaces that day's row instead of
+ * appending a duplicate, which keeps a re-run from producing a noisy commit.
+ */
+export async function upsertHistoryRow(
+	filePath: string,
+	header: string,
+	date: string,
+	values: ReadonlyArray<string | number>,
+): Promise<boolean> {
+	let existing = "";
+	try {
+		existing = await readFile(filePath, "utf8");
+	} catch {
+		existing = "";
+	}
+
+	const lines = existing
+		.split(/\r?\n/)
+		.map((line) => line.trimEnd())
+		.filter((line) => line.length > 0);
+	const hasHeader = lines[0] === header;
+	const body = hasHeader ? lines.slice(1) : lines;
+	const row = [date, ...values.map(String)].join(",");
+	const nextBody = body.filter((line) => !line.startsWith(`${date},`));
+	nextBody.push(row);
+
+	return writeIfChanged(filePath, [header, ...nextBody].join("\n"));
+}

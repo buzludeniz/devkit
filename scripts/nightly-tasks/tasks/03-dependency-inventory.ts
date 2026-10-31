@@ -3,7 +3,7 @@ import { join } from "node:path";
 import { writeIfChanged } from "../lib/fs.js";
 import { commitAll } from "../lib/git.js";
 import { listWorkspacePackages, repoRoot } from "../lib/repo.js";
-import { BaseTask } from "../task-base.js";
+import { ReportTask } from "../task-base.js";
 
 type DependencyField = "dependencies" | "devDependencies" | "peerDependencies";
 
@@ -95,23 +95,14 @@ export async function buildDependencyInventory(root: string): Promise<string> {
 	return lines.join("\n");
 }
 
-export class DependencyInventoryTask extends BaseTask {
+export class DependencyInventoryTask extends ReportTask {
 	readonly name = "dependency-inventory";
 	readonly description =
 		"Regenerate docs/security/dependencies.md from every manifest";
+	readonly reportPath = "docs/security/dependencies.md";
+	readonly commitMessage = "docs: refresh dependency inventory";
 
-	protected async execute(): Promise<string> {
-		const content = await buildDependencyInventory(repoRoot);
-		const changed = await writeIfChanged(
-			join(repoRoot, "docs/security/dependencies.md"),
-			content,
-		);
-
-		if (!changed) {
-			return "no changes";
-		}
-
-		await commitAll("docs: refresh dependency inventory", repoRoot);
-		return "updated docs/security/dependencies.md";
+	protected async buildReport(): Promise<string> {
+		return buildDependencyInventory(repoRoot);
 	}
 }

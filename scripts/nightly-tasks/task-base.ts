@@ -1,3 +1,9 @@
+import { createHash } from "node:crypto";
+import { join } from "node:path";
+import { upsertHistoryRow, writeIfChanged } from "./lib/fs.js";
+import { commitAll } from "./lib/git.js";
+import { repoRoot } from "./lib/repo.js";
+
 export interface TaskResult {
 	/** Stable identifier for the task, e.g. "update-dependencies". */
 	name: string;
@@ -46,5 +52,53 @@ export abstract class BaseTask implements NightlyTask {
 				durationMs: Date.now() - startedAt,
 			};
 		}
+	}
+}
+
+/**
+ * Base class for tasks whose output is a generated report committed to the
+ * repository.
+ *
+ * Every run appends a dated row to `docs/metrics/history/<name>.csv`, so a
+ * stable report still records that the task ran and when. The report itself is
+ * only rewritten when its content changes.
+ */
+export abstract class ReportTask extends BaseTask {
+	/** Repository-relative path of the generated report. */
+	abstract readonly reportPath: string;
+	/** Conventional commit message used when the task produces a change. */
+	abstract readonly commitMessage: string;
+
+	protected abstract buildReport(): Promise<string>;
+
+	protected async execute(): Promise<string> {
+		const content = await this.buildReport();
+		const normalised = content.endsWith("\n") ? content : `${content}\n`;
+		const reportChanged = await writeIfChanged(
+			join(repoRoot, this.reportPath),
+			normalised,
+		);
+		const historyChanged = await upsertHistoryRow(
+			join(repoRoot, "docs/metrics/history", `${this.name}.csv`),
+			"date,bytes,lines,fingerprint",
+			new Date().toISOString().slice(0, 10),
+			[
+				Buffer.byteLength(normalised, "utf8"),
+				normalised.split("\n").length - 1,
+				createHash("sha256").update(normalised).digest("hex").slice(0, 12),
+			],
+		);
+
+		if (!reportChanged && !historyChanged) {
+			return "no changes";
+		}
+
+		await commitAll(this.commitMessage, repoRoot);
+
+		if (reportChanged) {
+			return `updated ${this.reportPath}`;
+		}
+
+		return "recorded history";
 	}
 }

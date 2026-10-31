@@ -1,5 +1,5 @@
 import { join } from "node:path";
-import { writeIfChanged } from "../lib/fs.js";
+import { upsertHistoryRow, writeIfChanged } from "../lib/fs.js";
 import { commitAll } from "../lib/git.js";
 import { listWorkspacePackages, readJsonFile, repoRoot } from "../lib/repo.js";
 import { BaseTask } from "../task-base.js";
@@ -69,7 +69,7 @@ export function syncManifest(
 
 export async function synchroniseMetadata(
 	root: string,
-): Promise<{ updatedFiles: string[] }> {
+): Promise<{ updatedFiles: string[]; manifestsScanned: number }> {
 	const updatedFiles: string[] = [];
 
 	const rootManifestPath = join(root, "package.json");
@@ -110,7 +110,7 @@ export async function synchroniseMetadata(
 		updatedFiles.push(`${workspacePackage.directory}/package.json`);
 	}
 
-	return { updatedFiles };
+	return { updatedFiles, manifestsScanned: packages.length + 1 };
 }
 
 export class PackageMetadataTask extends BaseTask {
@@ -119,13 +119,25 @@ export class PackageMetadataTask extends BaseTask {
 		"Ensure every package declares license, repository and engines metadata";
 
 	protected async execute(): Promise<string> {
-		const { updatedFiles } = await synchroniseMetadata(repoRoot);
+		const { updatedFiles, manifestsScanned } =
+			await synchroniseMetadata(repoRoot);
+		const historyChanged = await upsertHistoryRow(
+			join(repoRoot, "docs/metrics/history/package-metadata.csv"),
+			"date,manifests,updated",
+			new Date().toISOString().slice(0, 10),
+			[manifestsScanned, updatedFiles.length],
+		);
 
-		if (updatedFiles.length === 0) {
+		if (updatedFiles.length === 0 && !historyChanged) {
 			return "no changes";
 		}
 
 		await commitAll("chore: synchronise package metadata", repoRoot);
+
+		if (updatedFiles.length === 0) {
+			return "recorded metadata audit";
+		}
+
 		return `updated ${updatedFiles.join(", ")}`;
 	}
 }

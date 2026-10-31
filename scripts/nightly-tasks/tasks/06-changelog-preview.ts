@@ -2,7 +2,7 @@ import { join } from "node:path";
 import { writeIfChanged } from "../lib/fs.js";
 import { commitAll, git } from "../lib/git.js";
 import { repoRoot } from "../lib/repo.js";
-import { BaseTask } from "../task-base.js";
+import { ReportTask } from "../task-base.js";
 
 export interface CommitEntry {
 	hash: string;
@@ -72,23 +72,14 @@ export async function buildChangelogPreview(
 	return lines.join("\n");
 }
 
-export class ChangelogPreviewTask extends BaseTask {
+export class ChangelogPreviewTask extends ReportTask {
 	readonly name = "changelog-preview";
 	readonly description =
 		"Regenerate docs/changelog-preview.md from recent commits";
+	readonly reportPath = "docs/changelog-preview.md";
+	readonly commitMessage = "docs: refresh recent changes preview";
 
-	protected async execute(): Promise<string> {
-		const content = await buildChangelogPreview(repoRoot);
-		const changed = await writeIfChanged(
-			join(repoRoot, "docs/changelog-preview.md"),
-			content,
-		);
-
-		if (!changed) {
-			return "no changes";
-		}
-
-		await commitAll("docs: refresh recent changes preview", repoRoot);
-		return "updated docs/changelog-preview.md";
+	protected async buildReport(): Promise<string> {
+		return buildChangelogPreview(repoRoot);
 	}
 }

@@ -9,7 +9,7 @@ import {
 	repoRoot,
 	toPosix,
 } from "../lib/repo.js";
-import { BaseTask } from "../task-base.js";
+import { ReportTask } from "../task-base.js";
 
 interface FileMetric {
 	path: string;
@@ -94,22 +94,13 @@ export async function buildCodeMetricsDoc(root: string): Promise<string> {
 	return lines.join("\n");
 }
 
-export class CodeMetricsTask extends BaseTask {
+export class CodeMetricsTask extends ReportTask {
 	readonly name = "code-metrics";
 	readonly description = "Regenerate docs/metrics/code-size.md with file sizes";
+	readonly reportPath = "docs/metrics/code-size.md";
+	readonly commitMessage = "docs: refresh code size metrics";
 
-	protected async execute(): Promise<string> {
-		const content = await buildCodeMetricsDoc(repoRoot);
-		const changed = await writeIfChanged(
-			join(repoRoot, "docs/metrics/code-size.md"),
-			content,
-		);
-
-		if (!changed) {
-			return "no changes";
-		}
-
-		await commitAll("docs: refresh code size metrics", repoRoot);
-		return "updated docs/metrics/code-size.md";
+	protected async buildReport(): Promise<string> {
+		return buildCodeMetricsDoc(repoRoot);
 	}
 }

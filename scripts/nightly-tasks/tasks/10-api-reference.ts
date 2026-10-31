@@ -8,7 +8,7 @@ import {
 	repoRoot,
 	toPosix,
 } from "../lib/repo.js";
-import { BaseTask } from "../task-base.js";
+import { ReportTask } from "../task-base.js";
 
 export interface ExportedSymbol {
 	file: string;
@@ -103,23 +103,14 @@ export async function buildApiReference(root: string): Promise<string> {
 	return lines.join("\n");
 }
 
-export class ApiReferenceTask extends BaseTask {
+export class ApiReferenceTask extends ReportTask {
 	readonly name = "api-reference";
 	readonly description =
 		"Regenerate docs/reference/api.md from exported symbols";
+	readonly reportPath = "docs/reference/api.md";
+	readonly commitMessage = "docs: refresh API reference";
 
-	protected async execute(): Promise<string> {
-		const content = await buildApiReference(repoRoot);
-		const changed = await writeIfChanged(
-			join(repoRoot, "docs/reference/api.md"),
-			content,
-		);
-
-		if (!changed) {
-			return "no changes";
-		}
-
-		await commitAll("docs: refresh API reference", repoRoot);
-		return "updated docs/reference/api.md";
+	protected async buildReport(): Promise<string> {
+		return buildApiReference(repoRoot);
 	}
 }
