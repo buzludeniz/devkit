@@ -21,5 +21,21 @@
     "typescript": "^5.6.0",
     "vitest": "^2.1.0",
     "@biomejs/biome": "^1.9.4"
+  },
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/buzludeniz/devkit.git",
+    "directory": "packages/core"
+  },
+  "homepage": "https://github.com/buzludeniz/devkit#readme",
+  "bugs": {
+    "url": "https://github.com/buzludeniz/devkit/issues"
+  },
+  "engines": {
+    "node": ">=20.0.0"
+  },
+  "publishConfig": {
+    "access": "public"
   }
 }

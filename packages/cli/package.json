@@ -31,5 +31,21 @@
     "@biomejs/biome": "^1.9.4",
     "tsx": "^4.19.2",
     "@types/node": "^22.0.0"
+  },
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/buzludeniz/devkit.git",
+    "directory": "packages/cli"
+  },
+  "homepage": "https://github.com/buzludeniz/devkit#readme",
+  "bugs": {
+    "url": "https://github.com/buzludeniz/devkit/issues"
+  },
+  "engines": {
+    "node": ">=20.0.0"
+  },
+  "publishConfig": {
+    "access": "public"
   }
 }
