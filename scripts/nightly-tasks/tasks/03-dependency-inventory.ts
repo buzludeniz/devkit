@@ -2,7 +2,7 @@ import { readFile } from "node:fs/promises";
 import { join } from "node:path";
 import { writeIfChanged } from "../lib/fs.js";
 import { commitAll } from "../lib/git.js";
-import { listWorkspacePackages, repoRoot } from "../lib/repo.js";
+import { listWorkspacePackages } from "../lib/repo.js";
 import { ReportTask } from "../task-base.js";
 
 type DependencyField = "dependencies" | "devDependencies" | "peerDependencies";
@@ -103,6 +103,6 @@ export class DependencyInventoryTask extends ReportTask {
 	readonly commitMessage = "docs: refresh dependency inventory";
 
 	protected async buildReport(): Promise<string> {
-		return buildDependencyInventory(repoRoot);
+		return buildDependencyInventory(this.root);
 	}
 }

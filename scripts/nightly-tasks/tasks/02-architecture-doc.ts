@@ -1,7 +1,7 @@
 import { join } from "node:path";
 import { writeIfChanged } from "../lib/fs.js";
 import { commitAll } from "../lib/git.js";
-import { listWorkspacePackages, repoRoot } from "../lib/repo.js";
+import { listWorkspacePackages } from "../lib/repo.js";
 import { ReportTask } from "../task-base.js";
 
 function dependencyNames(
@@ -84,6 +84,6 @@ export class ArchitectureDocTask extends ReportTask {
 	readonly commitMessage = "docs: regenerate architecture overview";
 
 	protected async buildReport(): Promise<string> {
-		return buildArchitectureDoc(repoRoot);
+		return buildArchitectureDoc(this.root);
 	}
 }

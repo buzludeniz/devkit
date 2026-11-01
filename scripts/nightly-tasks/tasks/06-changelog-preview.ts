@@ -1,7 +1,6 @@
 import { join } from "node:path";
 import { writeIfChanged } from "../lib/fs.js";
 import { commitAll, git } from "../lib/git.js";
-import { repoRoot } from "../lib/repo.js";
 import { ReportTask } from "../task-base.js";
 
 export interface CommitEntry {
@@ -80,6 +79,6 @@ export class ChangelogPreviewTask extends ReportTask {
 	readonly commitMessage = "docs: refresh recent changes preview";
 
 	protected async buildReport(): Promise<string> {
-		return buildChangelogPreview(repoRoot);
+		return buildChangelogPreview(this.root);
 	}
 }

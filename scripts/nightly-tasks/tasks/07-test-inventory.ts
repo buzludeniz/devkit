@@ -6,7 +6,6 @@ import {
 	listFiles,
 	listWorkspacePackages,
 	readTextFile,
-	repoRoot,
 	toPosix,
 } from "../lib/repo.js";
 import { ReportTask } from "../task-base.js";
@@ -106,6 +105,6 @@ export class TestInventoryTask extends ReportTask {
 	readonly commitMessage = "docs: refresh test inventory";
 
 	protected async buildReport(): Promise<string> {
-		return buildTestInventory(repoRoot);
+		return buildTestInventory(this.root);
 	}
 }

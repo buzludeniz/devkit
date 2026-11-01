@@ -5,7 +5,6 @@ import {
 	listFiles,
 	listWorkspacePackages,
 	readTextFile,
-	repoRoot,
 	toPosix,
 } from "../lib/repo.js";
 import { ReportTask } from "../task-base.js";
@@ -111,6 +110,6 @@ export class ApiReferenceTask extends ReportTask {
 	readonly commitMessage = "docs: refresh API reference";
 
 	protected async buildReport(): Promise<string> {
-		return buildApiReference(repoRoot);
+		return buildApiReference(this.root);
 	}
 }

@@ -68,6 +68,13 @@ export abstract class ReportTask extends BaseTask {
 	abstract readonly reportPath: string;
 	/** Conventional commit message used when the task produces a change. */
 	abstract readonly commitMessage: string;
+	/** Repository root the report is generated in. */
+	protected readonly root: string;
+
+	constructor(root: string = repoRoot) {
+		super();
+		this.root = root;
+	}
 
 	protected abstract buildReport(): Promise<string>;
 
@@ -75,11 +82,11 @@ export abstract class ReportTask extends BaseTask {
 		const content = await this.buildReport();
 		const normalised = content.endsWith("\n") ? content : `${content}\n`;
 		const reportChanged = await writeIfChanged(
-			join(repoRoot, this.reportPath),
+			join(this.root, this.reportPath),
 			normalised,
 		);
 		const historyChanged = await upsertHistoryRow(
-			join(repoRoot, "docs/metrics/history", `${this.name}.csv`),
+			join(this.root, "docs/metrics/history", `${this.name}.csv`),
 			"date,bytes,lines,fingerprint",
 			new Date().toISOString().slice(0, 10),
 			[
@@ -93,7 +100,7 @@ export abstract class ReportTask extends BaseTask {
 			return "no changes";
 		}
 
-		await commitAll(this.commitMessage, repoRoot);
+		await commitAll(this.commitMessage, this.root);
 
 		if (reportChanged) {
 			return `updated ${this.reportPath}`;

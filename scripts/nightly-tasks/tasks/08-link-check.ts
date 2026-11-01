@@ -2,7 +2,7 @@ import { access } from "node:fs/promises";
 import { dirname, join, resolve } from "node:path";
 import { writeIfChanged } from "../lib/fs.js";
 import { commitAll } from "../lib/git.js";
-import { listFiles, readTextFile, repoRoot } from "../lib/repo.js";
+import { listFiles, readTextFile } from "../lib/repo.js";
 import { ReportTask } from "../task-base.js";
 
 export interface BrokenLink {
@@ -111,6 +111,6 @@ export class LinkCheckTask extends ReportTask {
 	readonly commitMessage = "docs: refresh Markdown link report";
 
 	protected async buildReport(): Promise<string> {
-		return buildLinkReport(repoRoot);
+		return buildLinkReport(this.root);
 	}
 }

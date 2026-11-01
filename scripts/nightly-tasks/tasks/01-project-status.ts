@@ -7,7 +7,6 @@ import {
 	listWorkspacePackages,
 	readJsonFile,
 	readTextFile,
-	repoRoot,
 	toPosix,
 } from "../lib/repo.js";
 import { ReportTask } from "../task-base.js";
@@ -127,6 +126,6 @@ export class ProjectStatusTask extends ReportTask {
 	readonly commitMessage = "docs: refresh project status report";
 
 	protected async buildReport(): Promise<string> {
-		return buildProjectStatus(repoRoot);
+		return buildProjectStatus(this.root);
 	}
 }

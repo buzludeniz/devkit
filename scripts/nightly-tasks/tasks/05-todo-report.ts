@@ -1,7 +1,7 @@
 import { join, relative } from "node:path";
 import { writeIfChanged } from "../lib/fs.js";
 import { commitAll } from "../lib/git.js";
-import { listFiles, readTextFile, repoRoot } from "../lib/repo.js";
+import { listFiles, readTextFile } from "../lib/repo.js";
 import { ReportTask } from "../task-base.js";
 
 export interface TodoEntry {
@@ -93,6 +93,6 @@ export class TodoReportTask extends ReportTask {
 	readonly commitMessage = "docs: refresh outstanding work report";
 
 	protected async buildReport(): Promise<string> {
-		return buildTodoReport(repoRoot);
+		return buildTodoReport(this.root);
 	}
 }

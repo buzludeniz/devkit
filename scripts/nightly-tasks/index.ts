@@ -18,15 +18,25 @@ import { ApiReferenceTask } from "./tasks/10-api-reference.js";
  * generated first, then checked, and the project status is refreshed last so
  * its counts include everything produced by the current run.
  */
-export const tasks: NightlyTask[] = [
-	new ArchitectureDocTask(),
-	new DependencyInventoryTask(),
-	new CodeMetricsTask(),
-	new TodoReportTask(),
-	new ChangelogPreviewTask(),
-	new TestInventoryTask(),
-	new ApiReferenceTask(),
-	new LinkCheckTask(),
-	new PackageMetadataTask(),
-	new ProjectStatusTask(),
-];
+export function createTasks(root?: string): NightlyTask[] {
+	return [
+		new ArchitectureDocTask(root),
+		new DependencyInventoryTask(root),
+		new CodeMetricsTask(root),
+		new TodoReportTask(root),
+		new ChangelogPreviewTask(root),
+		new TestInventoryTask(root),
+		new ApiReferenceTask(root),
+		new LinkCheckTask(root),
+		new PackageMetadataTask(root),
+		new ProjectStatusTask(root),
+	];
+}
+
+/**
+ * Tasks for the working repository.
+ *
+ * Tests and the end-to-end harness call {@link createTasks} with a temporary
+ * repository root instead.
+ */
+export const tasks: NightlyTask[] = createTasks();

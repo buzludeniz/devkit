@@ -117,12 +117,19 @@ export class PackageMetadataTask extends BaseTask {
 	readonly name = "package-metadata";
 	readonly description =
 		"Ensure every package declares license, repository and engines metadata";
+	protected readonly root: string;
+
+	constructor(root: string = repoRoot) {
+		super();
+		this.root = root;
+	}
 
 	protected async execute(): Promise<string> {
-		const { updatedFiles, manifestsScanned } =
-			await synchroniseMetadata(repoRoot);
+		const { updatedFiles, manifestsScanned } = await synchroniseMetadata(
+			this.root,
+		);
 		const historyChanged = await upsertHistoryRow(
-			join(repoRoot, "docs/metrics/history/package-metadata.csv"),
+			join(this.root, "docs/metrics/history/package-metadata.csv"),
 			"date,manifests,updated",
 			new Date().toISOString().slice(0, 10),
 			[manifestsScanned, updatedFiles.length],
@@ -132,7 +139,7 @@ export class PackageMetadataTask extends BaseTask {
 			return "no changes";
 		}
 
-		await commitAll("chore: synchronise package metadata", repoRoot);
+		await commitAll("chore: synchronise package metadata", this.root);
 
 		if (updatedFiles.length === 0) {
 			return "recorded metadata audit";

@@ -6,7 +6,6 @@ import {
 	listFiles,
 	listWorkspacePackages,
 	readTextFile,
-	repoRoot,
 	toPosix,
 } from "../lib/repo.js";
 import { ReportTask } from "../task-base.js";
@@ -101,6 +100,6 @@ export class CodeMetricsTask extends ReportTask {
 	readonly commitMessage = "docs: refresh code size metrics";
 
 	protected async buildReport(): Promise<string> {
-		return buildCodeMetricsDoc(repoRoot);
+		return buildCodeMetricsDoc(this.root);
 	}
 }
