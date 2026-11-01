@@ -17,7 +17,7 @@ hero:
       link: https://github.com/buzludeniz/devkit
 
 features:
-  - title: Fourteen focused commands
+  - title: Eleven focused commands
     details: Scaffold projects, inspect git state, measure complexity, test endpoints, parse env files, generate docs, build changelogs and load plugins.
   - title: Ten nightly commits
     details: A scheduled GitHub Actions workflow refreshes ten independent reports every night and opens a pull request with the results.
