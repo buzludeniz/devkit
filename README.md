@@ -67,6 +67,9 @@ under `docs/metrics/history/` so trends survive across nights.
 The workflow pushes the result to a dated branch and opens a pull request. Nothing lands on `main`
 without review. If fewer than ten tasks succeed, the job exits non-zero.
 
+Two repository settings make this work: Actions must be allowed to create pull requests
+(Settings → Actions → General), and publishing needs an `NPM_TOKEN` secret.
+
 Run the same pipeline locally against a throwaway copy of the repository:
 
 ```bash
