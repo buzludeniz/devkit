@@ -1,3 +1,7 @@
+import { execFileSync } from "node:child_process";
+import { mkdtemp, rm, writeFile } from "node:fs/promises";
+import { tmpdir } from "node:os";
+import { join } from "node:path";
 import { describe, expect, it } from "vitest";
 import { repoRoot } from "../lib/repo.js";
 import { buildProjectStatus } from "./01-project-status.js";
@@ -85,10 +89,25 @@ describe("changelog preview", () => {
 	});
 
 	it("groups the repository history by type", async () => {
-		const doc = await buildChangelogPreview(repoRoot);
+		const dir = await mkdtemp(join(tmpdir(), "devkit-changelog-"));
+		try {
+			execFileSync("git", ["init", "-b", "main"], { cwd: dir });
+			execFileSync("git", ["config", "user.email", "test@example.com"], {
+				cwd: dir,
+			});
+			execFileSync("git", ["config", "user.name", "Test"], { cwd: dir });
+			await writeFile(join(dir, "feature.txt"), "feature\n");
+			execFileSync("git", ["add", "."], { cwd: dir });
+			execFileSync("git", ["commit", "-m", "feat: add feature"], { cwd: dir });
 
-		expect(doc).toContain("# Recent changes");
-		expect(doc).toContain("## feat");
+			const doc = await buildChangelogPreview(dir);
+
+			expect(doc).toContain("# Recent changes");
+			expect(doc).toContain("## feat");
+			expect(doc).toContain("add feature");
+		} finally {
+			await rm(dir, { recursive: true, force: true });
+		}
 	});
 });
 
