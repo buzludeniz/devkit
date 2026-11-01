@@ -7,6 +7,10 @@ updates:
       day: monday
       time: "04:00"
     open-pull-requests-limit: 5
+    ignore:
+      - dependency-name: "*"
+        update-types:
+          - version-update:semver-major
     groups:
       minor-and-patch:
         patterns:
@@ -24,5 +28,9 @@ updates:
       interval: weekly
       day: monday
       time: "04:00"
+    ignore:
+      - dependency-name: "*"
+        update-types:
+          - version-update:semver-major
     commit-message:
       prefix: "chore(ci)"
