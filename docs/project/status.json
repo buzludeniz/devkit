@@ -1,0 +1,45 @@
+{
+  "schemaVersion": 1,
+  "packages": [
+    {
+      "name": "@devkit/cli",
+      "version": "0.1.0",
+      "description": "CLI entry point for devkit",
+      "sourceFiles": 17,
+      "sourceLines": 957,
+      "testFiles": 12,
+      "testCases": 44
+    },
+    {
+      "name": "@devkit/core",
+      "version": "0.1.0",
+      "description": "Core utilities and shared types for devkit",
+      "sourceFiles": 3,
+      "sourceLines": 31,
+      "testFiles": 1,
+      "testCases": 1
+    }
+  ],
+  "totals": {
+    "packages": 2,
+    "sourceFiles": 39,
+    "sourceLines": 2641,
+    "testFiles": 20,
+    "testCases": 75,
+    "documentationFiles": 19
+  },
+  "scripts": {
+    "dev": "pnpm --filter @devkit/cli dev",
+    "build": "pnpm --filter @devkit/core build && pnpm --filter @devkit/cli build",
+    "lint": "pnpm --filter @devkit/core lint && pnpm --filter @devkit/cli lint",
+    "test": "pnpm --filter @devkit/core test && pnpm --filter @devkit/cli test && vitest run",
+    "typecheck": "pnpm --filter @devkit/core typecheck && pnpm --filter @devkit/cli typecheck && tsc -p scripts/tsconfig.json",
+    "nightly:maintenance": "tsx scripts/run-nightly.ts",
+    "docs:dev": "vitepress dev docs",
+    "docs:build": "vitepress build docs",
+    "docs:preview": "vitepress preview docs",
+    "changeset": "changeset",
+    "version": "changeset version",
+    "release": "pnpm build && changeset publish"
+  }
+}
