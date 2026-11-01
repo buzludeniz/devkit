@@ -6,7 +6,7 @@
       "version": "0.1.0",
       "description": "CLI entry point for devkit",
       "sourceFiles": 17,
-      "sourceLines": 957,
+      "sourceLines": 879,
       "testFiles": 12,
       "testCases": 44
     },
@@ -23,7 +23,7 @@
   "totals": {
     "packages": 2,
     "sourceFiles": 39,
-    "sourceLines": 2641,
+    "sourceLines": 2541,
     "testFiles": 20,
     "testCases": 75,
     "documentationFiles": 19
@@ -31,7 +31,8 @@
   "scripts": {
     "dev": "pnpm --filter @devkit/cli dev",
     "build": "pnpm --filter @devkit/core build && pnpm --filter @devkit/cli build",
-    "lint": "pnpm --filter @devkit/core lint && pnpm --filter @devkit/cli lint",
+    "lint": "biome check packages scripts",
+    "lint:fix": "biome check --write --unsafe packages scripts",
     "test": "pnpm --filter @devkit/core test && pnpm --filter @devkit/cli test && vitest run",
     "typecheck": "pnpm --filter @devkit/core typecheck && pnpm --filter @devkit/cli typecheck && tsc -p scripts/tsconfig.json",
     "nightly:maintenance": "tsx scripts/run-nightly.ts",
