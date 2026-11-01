@@ -4,6 +4,16 @@
   "type": "module",
   "version": "0.1.0",
   "description": "Developer productivity CLI with nightly automated commits",
+  "license": "MIT",
+  "author": "Deniz Alban",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/buzludeniz/devkit.git"
+  },
+  "homepage": "https://github.com/buzludeniz/devkit#readme",
+  "bugs": {
+    "url": "https://github.com/buzludeniz/devkit/issues"
+  },
   "scripts": {
     "dev": "pnpm --filter @devkit/cli dev",
     "build": "pnpm --filter @devkit/core build && pnpm --filter @devkit/cli build",
