@@ -5,23 +5,23 @@ Every command is registered by `createProgram()` in
 
 ## Project
 
-### `devkit init <name>`
+### `devkit init`
 
 Scaffold a new project from a built-in template.
 
 ```bash
-devkit init my-service --template node-app
-devkit init my-ui --template react-app --dir ./apps
+devkit init --name my-service --template node-app
+devkit init --name my-ui --template react-app --dir ./apps
 ```
 
 Options: `-t, --template <name>`, `-d, --dir <directory>`, `-n, --name <name>`.
 
-### `devkit analyze <path>`
+### `devkit analyze <file>`
 
-Estimate cyclomatic complexity for a TypeScript file or a directory.
+Estimate cyclomatic complexity for a TypeScript file.
 
 ```bash
-devkit analyze src
+devkit analyze ./src/index.ts
 ```
 
 The score is the number of decision points plus one. Decision points cover

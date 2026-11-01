@@ -19,18 +19,18 @@ import { ApiReferenceTask } from "./tasks/10-api-reference.js";
  * its counts include everything produced by the current run.
  */
 export function createTasks(root?: string): NightlyTask[] {
-	return [
-		new ArchitectureDocTask(root),
-		new DependencyInventoryTask(root),
-		new CodeMetricsTask(root),
-		new TodoReportTask(root),
-		new ChangelogPreviewTask(root),
-		new TestInventoryTask(root),
-		new ApiReferenceTask(root),
-		new LinkCheckTask(root),
-		new PackageMetadataTask(root),
-		new ProjectStatusTask(root),
-	];
+  return [
+    new ArchitectureDocTask(root),
+    new DependencyInventoryTask(root),
+    new CodeMetricsTask(root),
+    new TodoReportTask(root),
+    new ChangelogPreviewTask(root),
+    new TestInventoryTask(root),
+    new ApiReferenceTask(root),
+    new LinkCheckTask(root),
+    new PackageMetadataTask(root),
+    new ProjectStatusTask(root),
+  ];
 }
 
 /**

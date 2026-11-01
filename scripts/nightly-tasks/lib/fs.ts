@@ -7,56 +7,55 @@ import { dirname } from "node:path";
  * Nightly maintenance runs every day; refusing to rewrite identical content is
  * what keeps the generated reports from producing empty commits.
  */
-export async function writeIfChanged(
-	filePath: string,
-	content: string,
-): Promise<boolean> {
-	const normalised = content.endsWith("\n") ? content : `${content}\n`;
+export async function writeIfChanged(filePath: string, content: string): Promise<boolean> {
+  const normalised = content.endsWith("\n") ? content : `${content}\n`;
 
-	let existing: string | null = null;
-	try {
-		existing = await readFile(filePath, "utf8");
-	} catch {
-		existing = null;
-	}
+  let existing: string | null = null;
+  try {
+    existing = await readFile(filePath, "utf8");
+  } catch {
+    existing = null;
+  }
 
-	if (existing === normalised) {
-		return false;
-	}
+  if (existing !== null && existing.replace(/\r\n/g, "\n") === normalised) {
+    return false;
+  }
 
-	await mkdir(dirname(filePath), { recursive: true });
-	await writeFile(filePath, normalised, "utf8");
-	return true;
+  await mkdir(dirname(filePath), { recursive: true });
+  await writeFile(filePath, normalised, "utf8");
+  return true;
 }
 
 /**
- * Records one observation per day in a small CSV history file.
+ * Records one observation per run in a small CSV history file.
  *
- * Re-running the same task on the same day replaces that day's row instead of
- * appending a duplicate, which keeps a re-run from producing a noisy commit.
+ * The run identifier is a full ISO timestamp, so every execution appends a new
+ * row even on the same day. Re-running with the same identifier replaces that
+ * row instead of duplicating it. A header change resets the file so rows never
+ * mix schemas.
  */
 export async function upsertHistoryRow(
-	filePath: string,
-	header: string,
-	date: string,
-	values: ReadonlyArray<string | number>,
+  filePath: string,
+  header: string,
+  date: string,
+  values: ReadonlyArray<string | number>,
 ): Promise<boolean> {
-	let existing = "";
-	try {
-		existing = await readFile(filePath, "utf8");
-	} catch {
-		existing = "";
-	}
+  let existing = "";
+  try {
+    existing = await readFile(filePath, "utf8");
+  } catch {
+    existing = "";
+  }
 
-	const lines = existing
-		.split(/\r?\n/)
-		.map((line) => line.trimEnd())
-		.filter((line) => line.length > 0);
-	const hasHeader = lines[0] === header;
-	const body = hasHeader ? lines.slice(1) : lines;
-	const row = [date, ...values.map(String)].join(",");
-	const nextBody = body.filter((line) => !line.startsWith(`${date},`));
-	nextBody.push(row);
+  const lines = existing
+    .split(/\r?\n/)
+    .map((line) => line.trimEnd())
+    .filter((line) => line.length > 0);
+  const hasHeader = lines[0] === header;
+  const body = hasHeader ? lines.slice(1) : [];
+  const row = [date, ...values.map(String)].join(",");
+  const nextBody = body.filter((line) => !line.startsWith(`${date},`));
+  nextBody.push(row);
 
-	return writeIfChanged(filePath, [header, ...nextBody].join("\n"));
+  return writeIfChanged(filePath, [header, ...nextBody].join("\n"));
 }

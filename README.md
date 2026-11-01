@@ -18,9 +18,9 @@ fails on purpose, so silence is never mistaken for success.
 Commands cover the small jobs that otherwise get a shell alias and a README paragraph:
 
 ```bash
-devkit init my-app --template node-app     # scaffold a project
+devkit init --name my-app --template node-app  # scaffold a project
 devkit git status                          # parsed repository state
-devkit analyze ./src                       # decision-point complexity
+devkit analyze ./src/index.ts              # decision-point complexity
 devkit api:test https://example.com/health # HTTP health check
 devkit env:load .env --required API_URL    # validate and mask environment files
 devkit docs:generate                       # collect JSDoc exports into Markdown
@@ -61,11 +61,13 @@ The workflow lives in `.github/workflows/nightly-maintenance.yml` and runs at 02
 | API reference | `docs/reference/api.md` |
 
 Each task is isolated. A failure is recorded and the remaining tasks still run. Every task that
-changes a file makes exactly one commit, and each run also appends a row to a per-task history CSV
-under `docs/metrics/history/` so trends survive across nights.
+changes a file makes exactly one commit, and each run also appends a run-stamped row to a per-task
+history CSV under `docs/metrics/history/` so trends survive across nights. The run stamp is what
+lets a nightly run produce ten commits even when every report's content is unchanged.
 
 The workflow pushes the result to a dated branch and opens a pull request. Nothing lands on `main`
-without review. If fewer than ten tasks succeed, the job exits non-zero.
+without review. If fewer than ten tasks succeed, or fewer than ten commits were generated, the job
+fails before pushing anything.
 
 Two repository settings make this work: Actions must be allowed to create pull requests
 (Settings → Actions → General), and publishing needs an `NPM_TOKEN` secret.
@@ -76,8 +78,9 @@ Run the same pipeline locally against a throwaway copy of the repository:
 pnpm exec tsx scripts/test-nightly-e2e.ts
 ```
 
-The end-to-end check copies the repository to a temporary directory, seeds one commit, runs all ten
-tasks, and asserts at least ten commits were created. It never touches your working tree.
+The end-to-end check copies the repository to a temporary directory, seeds one commit, runs the
+whole pipeline twice, and asserts each run produces at least ten commits. It never touches your
+working tree.
 
 ## Repository layout
 

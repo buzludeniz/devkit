@@ -40,10 +40,13 @@ jobs:
       - name: Run tests
         run: pnpm test
 
+      - name: Build packages
+        run: pnpm build
+
       - name: Create version pull request or publish
         uses: changesets/action@v1
         with:
-          version: pnpm version
+          version: pnpm changeset version
           publish: pnpm release
           commit: "chore(release): version packages"
           title: "chore(release): version packages"

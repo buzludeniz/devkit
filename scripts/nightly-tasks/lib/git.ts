@@ -4,26 +4,40 @@ import { promisify } from "node:util";
 const execFileAsync = promisify(execFile);
 
 export async function git(args: string[], cwd: string): Promise<string> {
-	const { stdout } = await execFileAsync("git", args, { cwd });
-	return stdout.trim();
+  const { stdout } = await execFileAsync("git", args, { cwd });
+  return stdout.trim();
 }
 
 /**
- * Stages and commits every change in the working tree.
+ * Commits only the given repository-relative paths.
  *
- * Returns false when there is nothing to commit, which lets each nightly task
- * report an honest "no changes" result instead of creating empty commits.
+ * Nightly tasks generate their own report and history row; staging the whole
+ * working tree would sweep unrelated edits (or another task's half-written
+ * output) into the wrong commit. Returns false when none of the paths changed,
+ * which happens when Git normalises the write away.
  */
-export async function commitAll(
-	message: string,
-	cwd: string,
+export async function commitPaths(
+  message: string,
+  paths: readonly string[],
+  cwd: string,
 ): Promise<boolean> {
-	const status = await git(["status", "--porcelain"], cwd);
-	if (status.length === 0) {
-		return false;
-	}
+  const unique = [...new Set(paths)];
+  if (unique.length === 0) {
+    return false;
+  }
 
-	await git(["add", "-A"], cwd);
-	await git(["commit", "-m", message], cwd);
-	return true;
+  const status = await git(["status", "--porcelain", "--", ...unique], cwd);
+  if (status.length === 0) {
+    return false;
+  }
+
+  await git(["add", "--", ...unique], cwd);
+
+  const staged = await git(["diff", "--cached", "--name-only", "--", ...unique], cwd);
+  if (staged.length === 0) {
+    return false;
+  }
+
+  await git(["commit", "-m", message, "--", ...unique], cwd);
+  return true;
 }

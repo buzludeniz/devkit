@@ -35,7 +35,7 @@ prefixes, so a vague subject becomes a vague release note.
 
 ```
 feat(cli): add plugin:load command
-fix(nightly): keep history rows unique per day
+fix(nightly): keep history rows unique per run
 docs: describe the nightly pipeline
 ```
 
@@ -44,8 +44,9 @@ marked breaking.
 
 ## Code style
 
-Biome owns formatting: tabs, double quotes, semicolons, organized imports. Run `pnpm lint` before
-committing; it fixes most issues automatically. Do not hand-format around it.
+Biome owns formatting: two-space indentation, double quotes, semicolons, organized imports. Run
+`pnpm lint:fix` before committing; it fixes most issues automatically. `pnpm lint` is the read-only
+check used by CI. Do not hand-format around it.
 
 ## Tests
 
@@ -60,9 +61,9 @@ pnpm exec tsx scripts/test-nightly-e2e.ts
 
 ## Nightly commits
 
-The scheduled workflow commits generated reports directly. Do not edit files under `docs/project/`,
-`docs/metrics/` or `docs/reference/api.md` by hand; the next run overwrites them. Change the
-generator in `scripts/nightly-tasks/` instead.
+The scheduled workflow regenerates the reports on a dated branch and opens a pull request. Do not
+edit files under `docs/project/`, `docs/metrics/` or `docs/reference/api.md` by hand; the next run
+overwrites them. Change the generator in `scripts/nightly-tasks/` instead.
 
 ## License
 

@@ -6,8 +6,7 @@
     "rules": {
       "recommended": true,
       "complexity": {
-        "noForEach": "off",
-        "noStaticThisClass": "off"
+        "noForEach": "off"
       }
     }
   },
@@ -24,6 +23,6 @@
     }
   },
   "files": {
-    "ignore": ["node_modules", "dist", ".changeset"]
+    "ignore": ["**/node_modules/**", "**/dist/**", "**/coverage/**", "**/.vitepress/**", ".changeset"]
   }
 }

@@ -1,11 +1,11 @@
 {
-	"name": "{{name}}",
-	"version": "0.1.0",
-	"description": "A new Node.js application",
-	"main": "index.js",
-	"scripts": {
-		"start": "node index.js",
-		"dev": "node --watch index.js"
-	},
-	"dependencies": {}
+  "name": "{{name}}",
+  "version": "0.1.0",
+  "description": "A new Node.js application",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js",
+    "dev": "node --watch index.js"
+  },
+  "dependencies": {}
 }
