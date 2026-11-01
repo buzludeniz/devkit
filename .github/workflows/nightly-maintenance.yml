@@ -65,7 +65,7 @@ jobs:
         if: steps.commits.outputs.count != '0'
         run: |
           BRANCH="${{ steps.branch.outputs.name }}"
-          git push origin --delete "$BRANCH" || true
+          git push origin --delete "$BRANCH" 2>/dev/null || true
           git push --set-upstream origin "$BRANCH"
 
       - name: Open or update pull request
