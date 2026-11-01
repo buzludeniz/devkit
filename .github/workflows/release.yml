@@ -43,7 +43,20 @@ jobs:
       - name: Build packages
         run: pnpm build
 
+      - name: Check npm credentials
+        id: npm
+        env:
+          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+        run: |
+          if [ -n "$NPM_TOKEN" ]; then
+            echo "available=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "available=false" >> "$GITHUB_OUTPUT"
+            echo "::notice::NPM_TOKEN is not configured; skipping versioning and publishing."
+          fi
+
       - name: Create version pull request or publish
+        if: steps.npm.outputs.available == 'true'
         uses: changesets/action@v1
         with:
           version: pnpm changeset version
