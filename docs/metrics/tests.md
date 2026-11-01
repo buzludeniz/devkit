@@ -7,7 +7,7 @@
 
 | Package | Test files | Test cases | Source files | Source lines |
 | --- | --- | --- | --- | --- |
-| `@devkit/cli` | 12 | 44 | 17 | 957 |
+| `@devkit/cli` | 12 | 44 | 17 | 879 |
 | `@devkit/core` | 1 | 1 | 3 | 31 |
 
 ## Test files
