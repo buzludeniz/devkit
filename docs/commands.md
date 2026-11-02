@@ -14,7 +14,11 @@ devkit init --name my-service --template node-app
 devkit init --name my-ui --template react-app --dir ./apps
 ```
 
-Options: `-t, --template <name>`, `-d, --dir <directory>`, `-n, --name <name>`.
+Options: `-t, --template <name>`, `-d, --dir <directory>`, `-n, --name <name>`,
+`-f, --force`.
+
+The command refuses to overwrite an existing `package.json` and exits non-zero
+unless `--force` is passed. Other files in the target directory are left alone.
 
 ### `devkit analyze <file>`
 
@@ -32,7 +36,9 @@ chaining and ternaries.
 
 ### `devkit git status`
 
-Show the current branch and staged, modified and untracked files.
+Show the current branch and staged, modified and untracked files. A file with
+both staged and unstaged changes appears in both lists. Renames are reported
+under their new path.
 
 ### `devkit git branches`
 

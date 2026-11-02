@@ -25,13 +25,22 @@ export async function getGitStatus(cwd: string = process.cwd()): Promise<GitStat
     if (!line.trim()) continue;
     const indexStatus = line[0];
     const workTreeStatus = line[1];
-    const file = line.slice(3);
+    let file = line.slice(3);
 
     if (indexStatus === "?") {
       untracked.push(file);
-    } else if (indexStatus !== " " && indexStatus !== "?") {
+      continue;
+    }
+
+    if (indexStatus === "R") {
+      const renameArrow = file.indexOf(" -> ");
+      if (renameArrow !== -1) file = file.slice(renameArrow + 4);
+    }
+
+    if (indexStatus === "A" || indexStatus === "M" || indexStatus === "D" || indexStatus === "R") {
       staged.push(file);
-    } else if (workTreeStatus !== " ") {
+    }
+    if (workTreeStatus === "M" || workTreeStatus === "D") {
       modified.push(file);
     }
   }

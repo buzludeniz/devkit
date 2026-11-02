@@ -48,4 +48,26 @@ describe("getGitStatus", () => {
     expect(status.modified).toEqual(["modified.ts"]);
     expect(status.untracked).toEqual(["new.ts"]);
   });
+
+  it("parses MM, renames, worktree modifications, additions and untracked files", async () => {
+    execFileAsyncMock
+      .mockResolvedValueOnce({ stdout: "main\n", stderr: "" })
+      .mockResolvedValueOnce({
+        stdout: [
+          "MM both.ts",
+          "R  old.ts -> new.ts",
+          " M worktree.ts",
+          "A  added.ts",
+          "?? untracked.ts",
+          "",
+        ].join("\n"),
+        stderr: "",
+      });
+
+    const status = await getGitStatus("/repo");
+
+    expect(status.staged).toEqual(["both.ts", "new.ts", "added.ts"]);
+    expect(status.modified).toEqual(["both.ts", "worktree.ts"]);
+    expect(status.untracked).toEqual(["untracked.ts"]);
+  });
 });

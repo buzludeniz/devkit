@@ -1,7 +1,7 @@
 ---
 id: 002
 slug: git-status-parser
-status: ready
+status: done
 area: packages/cli
 ---
 
@@ -30,3 +30,11 @@ staged and then modified again (`MM`) should appear in both lists, and a rename
 
 - Update the `devkit git status` entry in `docs/commands.md` if it describes
   the returned fields.
+
+## Result
+
+The porcelain parser now reads the index and worktree columns separately: `A`,
+`M`, `D` and `R` in the first column count as staged, while `M` and `D` in the
+second column count as modified, so `MM` appears in both lists. Rename entries
+are reported under the new path. Added fixtures for `MM`, `R`, ` M`, `A` and
+`??` in `git-status.test.ts` and described the behaviour in `docs/commands.md`.
