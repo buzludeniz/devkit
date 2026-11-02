@@ -20,6 +20,7 @@ export default defineConfig({
 					{ text: "Getting started", link: "/getting-started" },
 					{ text: "Commands", link: "/commands" },
 					{ text: "Plugins", link: "/plugins" },
+					{ text: "Nightly agent", link: "/nightly-agent" },
 				],
 			},
 			{

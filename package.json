@@ -22,6 +22,8 @@
     "test": "pnpm --filter @devkit/core test && pnpm --filter @devkit/cli test && vitest run",
     "typecheck": "pnpm --filter @devkit/core typecheck && pnpm --filter @devkit/cli typecheck && tsc -p scripts/tsconfig.json",
     "nightly:maintenance": "tsx scripts/run-nightly.ts",
+    "nightly:verify": "tsx scripts/nightly-verify.ts",
+    "nightly:agent": "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/nightly-agent.ps1",
     "docs:dev": "vitepress dev docs",
     "docs:build": "vitepress build docs",
     "docs:preview": "vitepress preview docs",

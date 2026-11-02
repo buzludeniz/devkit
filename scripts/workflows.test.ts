@@ -38,13 +38,14 @@ describe("GitHub Actions workflows", () => {
     }
   });
 
-  it("schedules the nightly job and requires ten commits", async () => {
+  it("keeps the report refresh manual and requires ten commits", async () => {
     const workflows = await loadWorkflows();
     const nightly = workflows.find((workflow) => workflow.file === "nightly-maintenance.yml");
 
     expect(nightly).toBeDefined();
     const serialised = JSON.stringify(nightly?.document);
-    expect(serialised).toContain("schedule");
+    expect(serialised).toContain("workflow_dispatch");
+    expect(serialised).not.toContain("schedule");
     expect(serialised).toContain("pnpm nightly:maintenance");
     expect(serialised).toContain("count < 10");
 

@@ -42,44 +42,44 @@ pnpm build
 node packages/cli/dist/index.js --help
 ```
 
-## The nightly pipeline
+## The nightly agent
 
-The workflow lives in `.github/workflows/nightly-maintenance.yml` and runs at 02:00 UTC. It executes
-`pnpm nightly:maintenance`, which walks a registry of ten tasks:
+A Windows scheduled task named **DevKit Nightly Agent** runs at 02:00 every day. It starts a headless
+OpenCode session against a backlog of real engineering work:
 
-| Task | Output |
-| --- | --- |
-| Project status | `docs/project/status.json` |
-| Architecture overview | `docs/architecture.md` |
-| Dependency inventory | `docs/security/dependencies.md` |
-| Code size metrics | `docs/metrics/code-size.md` |
-| Outstanding work report | `docs/project/todos.md` |
-| Recent changes preview | `docs/changelog-preview.md` |
-| Test inventory | `docs/metrics/tests.md` |
-| Markdown link report | `docs/project/link-report.md` |
-| Package metadata audit | manifests under `packages/*` |
-| API reference | `docs/reference/api.md` |
+```powershell
+opencode run --standalone --auto --model opencode/deepseek-v4.1-flash-free `
+  --file .nightly/AGENT_PROMPT.md "Execute the nightly work order."
+```
 
-Each task is isolated. A failure is recorded and the remaining tasks still run. Every task that
-changes a file makes exactly one commit, and each run also appends a run-stamped row to a per-task
-history CSV under `docs/metrics/history/` so trends survive across nights. The run stamp is what
-lets a nightly run produce ten commits even when every report's content is unchanged.
+Each run does the following:
 
-The workflow pushes the result to a dated branch and opens a pull request. Nothing lands on `main`
-without review. If fewer than ten tasks succeed, or fewer than ten commits were generated, the job
-fails before pushing anything.
+1. Refuses to start on a dirty tree, fast-forwards `main`, and creates `nightly/agent-YYYY-MM-DD`.
+2. Plans more backlog items when fewer than ten are ready.
+3. Implements ten items. Every item starts with a failing test, then source, then the documentation
+   the change needs, and ends with one conventional commit tagged `(backlog NNN)`.
+4. Runs `scripts/nightly-verify.ts`, which rejects docs-only commits: a counted commit must touch
+   non-test source under `packages/*/src` or `scripts/` **and** a `*.test.ts` file.
+5. Runs `pnpm lint`, `pnpm typecheck`, and `pnpm test`.
+6. Pushes the branch and opens or updates a pull request with the ten commits. Nothing lands on
+   `main` without review.
 
-Two repository settings make this work: Actions must be allowed to create pull requests
-(Settings → Actions → General), and publishing needs an `NPM_TOKEN` secret.
+A run that cannot produce ten verified work commits fails before pushing anything. The previous
+commit count is never padded with reports or formatting.
 
-Run the same pipeline locally against a throwaway copy of the repository:
+The report generator still exists for manual use. `.github/workflows/nightly-maintenance.yml` is
+manual-only and refreshes the architecture, metrics, and inventory documents in one PR.
+
+Setup and troubleshooting for the scheduled task are in [docs/nightly-agent.md](docs/nightly-agent.md).
+
+Run the report pipeline against a throwaway copy of the repository:
 
 ```bash
 pnpm exec tsx scripts/test-nightly-e2e.ts
 ```
 
 The end-to-end check copies the repository to a temporary directory, seeds one commit, runs the
-whole pipeline twice, and asserts each run produces at least ten commits. It never touches your
+report pipeline twice, and asserts each run produces at least ten commits. It never touches your
 working tree.
 
 ## Repository layout
@@ -89,9 +89,13 @@ packages/
   core/          shared types and errors
   cli/           command implementations and templates
 scripts/
-  run-nightly.ts        entry point for the scheduled run
-  nightly-tasks/        task base classes, runner and the ten tasks
+  nightly-agent.ps1     scheduled orchestrator
+  nightly-verify.ts     rejects docs-only work commits
+  run-nightly.ts        report pipeline entry point
+  nightly-tasks/        task base classes, runner and the ten report tasks
   test-nightly-e2e.ts   isolated end-to-end verification
+backlog/                ready, in-progress and done work items
+.nightly/               agent and planner prompts, run logs
 docs/                   VitePress site and generated reports
 ```
 
