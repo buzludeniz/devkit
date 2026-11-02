@@ -36,7 +36,9 @@ chaining and ternaries.
 
 ### `devkit git status`
 
-Show the current branch and staged, modified and untracked files.
+Show the current branch and staged, modified and untracked files. A file with
+both staged and unstaged changes appears in both lists. Renames are reported
+under their new path.
 
 ### `devkit git branches`
 
