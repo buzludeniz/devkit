@@ -1,7 +1,7 @@
 ---
 id: 001
 slug: init-force
-status: ready
+status: done
 area: packages/cli
 ---
 
@@ -28,3 +28,11 @@ what is already there. Running it twice silently replaces `package.json`.
 ## Documentation
 
 - Update the `devkit init` entry in `docs/commands.md` with `--force`.
+
+## Result
+
+`devkit init` now checks for an existing `package.json` before writing and exits
+non-zero with the conflicting path unless `-f, --force` is passed. The check
+runs before any file is written, so a rejected run leaves the target untouched.
+Added `init.test.ts` covering the guarded, forced and empty-directory paths, and
+documented `--force` in `docs/commands.md`.

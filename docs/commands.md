@@ -14,7 +14,11 @@ devkit init --name my-service --template node-app
 devkit init --name my-ui --template react-app --dir ./apps
 ```
 
-Options: `-t, --template <name>`, `-d, --dir <directory>`, `-n, --name <name>`.
+Options: `-t, --template <name>`, `-d, --dir <directory>`, `-n, --name <name>`,
+`-f, --force`.
+
+The command refuses to overwrite an existing `package.json` and exits non-zero
+unless `--force` is passed. Other files in the target directory are left alone.
 
 ### `devkit analyze <file>`
 
