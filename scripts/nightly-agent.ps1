@@ -5,7 +5,7 @@ param(
   [switch]$SkipTests
 )
 
-$ErrorActionPreference = "Stop"
+$ErrorActionPreference = "Continue"
 $RepoRoot = Split-Path -Parent $PSScriptRoot
 Set-Location $RepoRoot
 
