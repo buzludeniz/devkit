@@ -30,124 +30,126 @@
  * non-zero exit would make an agent believe its work had failed.
  */
 
-import { appendFileSync, existsSync } from 'node:fs';
-import { join } from 'node:path';
+import { appendFileSync, existsSync } from "node:fs";
+import { join } from "node:path";
 
 /** Appended to on every attempt, so a silent failure is still diagnosable. */
-const LOG = join(process.cwd(), '.agent-notify.log');
+const LOG = join(process.cwd(), ".agent-notify.log");
 
 const readEnv = (name) => {
-    const value = process.env[name];
-    return value === undefined || value === '' ? null : value;
+  const value = process.env[name];
+  return value === undefined || value === "" ? null : value;
 };
 
 const parseArgs = () => {
-    const args = process.argv.slice(2);
-    const flags = new Set(args.filter((a) => a.startsWith('--')));
-    const positional = args.filter((a) => !a.startsWith('--'));
+  const args = process.argv.slice(2);
+  const flags = new Set(args.filter((a) => a.startsWith("--")));
+  const positional = args.filter((a) => !a.startsWith("--"));
 
-    return {
-        flags,
-        subject: positional[0] ?? 'Agent status',
-        body: positional[1] ?? null,
-        stdin: flags.has('--stdin')
-    };
+  return {
+    flags,
+    subject: positional[0] ?? "Agent status",
+    body: positional[1] ?? null,
+    stdin: flags.has("--stdin"),
+  };
 };
 
 const readStdin = async () => {
-    if (process.stdin.isTTY) return '';
+  if (process.stdin.isTTY) return "";
 
-    const chunks = [];
-    for await (const chunk of process.stdin) chunks.push(chunk);
-    return Buffer.concat(chunks).toString('utf8');
+  const chunks = [];
+  for await (const chunk of process.stdin) chunks.push(chunk);
+  return Buffer.concat(chunks).toString("utf8");
 };
 
 /** A one-line stamp so several sessions' emails can be told apart. */
-const stamp = () => new Date().toISOString().replace('T', ' ').slice(0, 19);
+const stamp = () => new Date().toISOString().replace("T", " ").slice(0, 19);
 
 const log = (line) => {
-    // Best effort. If even this fails there is nothing more to try.
-    try {
-        appendFileSync(LOG, `${stamp()}  ${line}\n`);
-    } catch {
-        /* nothing useful to do */
-    }
+  // Best effort. If even this fails there is nothing more to try.
+  try {
+    appendFileSync(LOG, `${stamp()}  ${line}\n`);
+  } catch {
+    /* nothing useful to do */
+  }
 };
 
 const send = async ({ subject, body }) => {
-    const key = readEnv('RESEND_API_KEY');
-    const from = readEnv('MAIL_FROM');
-    const to = readEnv('ALERT_TO') ?? from;
+  const key = readEnv("RESEND_API_KEY");
+  const from = readEnv("MAIL_FROM");
+  const to = readEnv("ALERT_TO") ?? from;
 
-    if (!key || !from) {
-        return {
-            sent: false,
-            reason: 'RESEND_API_KEY and MAIL_FROM must be set in the user environment'
-        };
-    }
-
-    const text = `${body.trim()}\n\n---\nsent ${stamp()}`;
-
-    const response = await fetch('https://api.resend.com/emails', {
-        method: 'POST',
-        headers: { Authorization: `Bearer ${key}`, 'Content-Type': 'application/json' },
-        body: JSON.stringify({ from, to, subject, text })
-    });
-
-    if (response.ok) return { sent: true, status: response.status };
-
-    // The body is the only useful part of a refusal. Reporting "not sent" with no
-    // reason is indistinguishable from having no way to send at all.
-    const detail = await response.text().catch(() => '');
+  if (!key || !from) {
     return {
-        sent: false,
-        status: response.status,
-        reason: `resend ${response.status}: ${detail.slice(0, 300) || 'no body'}`
+      sent: false,
+      reason: "RESEND_API_KEY and MAIL_FROM must be set in the user environment",
     };
+  }
+
+  const text = `${body.trim()}\n\n---\nsent ${stamp()}`;
+
+  const response = await fetch("https://api.resend.com/emails", {
+    method: "POST",
+    headers: { Authorization: `Bearer ${key}`, "Content-Type": "application/json" },
+    body: JSON.stringify({ from, to, subject, text }),
+  });
+
+  if (response.ok) return { sent: true, status: response.status };
+
+  // The body is the only useful part of a refusal. Reporting "not sent" with no
+  // reason is indistinguishable from having no way to send at all.
+  const detail = await response.text().catch(() => "");
+  return {
+    sent: false,
+    status: response.status,
+    reason: `resend ${response.status}: ${detail.slice(0, 300) || "no body"}`,
+  };
 };
 
 const main = async () => {
-    const { flags, subject, body, stdin } = parseArgs();
+  const { flags, subject, body, stdin } = parseArgs();
 
-    const content = stdin ? await readStdin() : (body ?? '');
+  const content = stdin ? await readStdin() : (body ?? "");
 
-    if (!content.trim()) {
-        log('skipped: empty body');
-        console.error('[notify] nothing to send: no message given');
-        return;
-    }
+  if (!content.trim()) {
+    log("skipped: empty body");
+    console.error("[notify] nothing to send: no message given");
+    return;
+  }
 
-    if (flags.has('--dry-run')) {
-        console.log(`[notify] DRY RUN\n  to:      ${readEnv('ALERT_TO') ?? readEnv('MAIL_FROM') ?? '(unset)'}`);
-        console.log(`  from:    ${readEnv('MAIL_FROM') ?? '(unset)'}`);
-        console.log(`  subject: ${subject}`);
-        console.log(`  body:\n${content}`);
-        return;
-    }
+  if (flags.has("--dry-run")) {
+    console.log(
+      `[notify] DRY RUN\n  to:      ${readEnv("ALERT_TO") ?? readEnv("MAIL_FROM") ?? "(unset)"}`,
+    );
+    console.log(`  from:    ${readEnv("MAIL_FROM") ?? "(unset)"}`);
+    console.log(`  subject: ${subject}`);
+    console.log(`  body:\n${content}`);
+    return;
+  }
 
-    let result;
+  let result;
 
-    try {
-        result = await send({ subject, body: content });
-    } catch (error) {
-        // Never rethrow. A notification must not fail the work it is reporting on.
-        log(`failed: ${error.message}`);
-        console.error(`[notify] could not send: ${error.message}`);
-        return;
-    }
+  try {
+    result = await send({ subject, body: content });
+  } catch (error) {
+    // Never rethrow. A notification must not fail the work it is reporting on.
+    log(`failed: ${error.message}`);
+    console.error(`[notify] could not send: ${error.message}`);
+    return;
+  }
 
-    log(result.sent ? 'sent' : `not sent: ${result.reason ?? 'unknown'}`);
+  log(result.sent ? "sent" : `not sent: ${result.reason ?? "unknown"}`);
 
-    if (result.sent) {
-        console.log(`[notify] sent to ${readEnv('ALERT_TO') ?? readEnv('MAIL_FROM')}`);
-    } else {
-        console.error(`[notify] not sent: ${result.reason}`);
-        if (existsSync(LOG)) console.error(`[notify] see ${LOG}`);
-    }
+  if (result.sent) {
+    console.log(`[notify] sent to ${readEnv("ALERT_TO") ?? readEnv("MAIL_FROM")}`);
+  } else {
+    console.error(`[notify] not sent: ${result.reason}`);
+    if (existsSync(LOG)) console.error(`[notify] see ${LOG}`);
+  }
 };
 
 main().catch((error) => {
-    console.error(`[notify] failed: ${error.message}`);
-    // Exit 0 on purpose: see the header.
-    process.exitCode = 0;
+  console.error(`[notify] failed: ${error.message}`);
+  // Exit 0 on purpose: see the header.
+  process.exitCode = 0;
 });
