@@ -46,6 +46,17 @@ List local branches and mark the current one.
 
 ## Quality
 
+### `devkit doctor`
+
+Check development toolchain and repository health (Node.js >= 20, pnpm, git, repository root).
+
+```bash
+devkit doctor
+devkit doctor --json
+```
+
+Exits 0 if all checks pass, 1 if any check fails. With `--json`, outputs `{ checks: [{ name, ok, detail }] }`.
+
 ### `devkit api:test <url>`
 
 Send a GET request and assert the response status.

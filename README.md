@@ -32,6 +32,7 @@ Commands cover the small jobs that otherwise get a shell alias and a README para
 
 ```bash
 devkit init --name my-app --template node-app  # scaffold a project
+devkit doctor                                  # verify toolchain and repository health
 devkit git status                          # parsed repository state
 devkit analyze ./src/index.ts              # decision-point complexity
 devkit api:test https://example.com/health # HTTP health check

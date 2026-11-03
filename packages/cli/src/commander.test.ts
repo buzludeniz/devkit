@@ -24,4 +24,10 @@ describe("createProgram", () => {
     const initCmd = program.commands.find((cmd) => cmd.name() === "init");
     expect(initCmd).toBeDefined();
   });
+
+  it("has doctor command registered", () => {
+    const program = createProgram();
+    const doctorCmd = program.commands.find((cmd) => cmd.name() === "doctor");
+    expect(doctorCmd).toBeDefined();
+  });
 });
