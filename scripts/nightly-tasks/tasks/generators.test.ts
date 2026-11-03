@@ -1,5 +1,5 @@
 import { execFileSync } from "node:child_process";
-import { mkdtemp, rm, writeFile } from "node:fs/promises";
+import { mkdir, mkdtemp, rm, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { describe, expect, it } from "vitest";
@@ -115,6 +115,58 @@ describe("test inventory", () => {
     expect(doc).toContain("# Test inventory");
     expect(doc).toContain("@devkit/cli");
     expect(doc).toMatch(/\| `@devkit\/cli` \| [1-9]\d* \|/);
+  });
+
+  it("counts script tests in the totals and adds a scripts row", async () => {
+    const dir = await mkdtemp(join(tmpdir(), "devkit-tests-"));
+    try {
+      await mkdir(join(dir, "packages", "alpha", "src"), { recursive: true });
+      await mkdir(join(dir, "scripts"), { recursive: true });
+      await writeFile(
+        join(dir, "packages", "alpha", "package.json"),
+        JSON.stringify({ name: "@example/alpha", version: "1.0.0" }),
+      );
+      await writeFile(
+        join(dir, "packages", "alpha", "src", "index.ts"),
+        "export const alpha = 1;\n",
+      );
+      await writeFile(
+        join(dir, "packages", "alpha", "src", "index.test.ts"),
+        "it('a', () => {});\nit('b', () => {});\n",
+      );
+      await writeFile(join(dir, "scripts", "tool.test.ts"), "test('tool', () => {});\n");
+
+      const doc = await buildTestInventory(dir);
+
+      expect(doc).toContain("- Test files: 2");
+      expect(doc).toContain("- Test cases: 3");
+      expect(doc).toContain("| `scripts` | 1 | 1 |");
+      expect(doc).toContain("- `scripts/tool.test.ts`");
+    } finally {
+      await rm(dir, { recursive: true, force: true });
+    }
+  });
+
+  it("omits the scripts row when no script tests exist", async () => {
+    const dir = await mkdtemp(join(tmpdir(), "devkit-tests-"));
+    try {
+      await mkdir(join(dir, "packages", "alpha", "src"), { recursive: true });
+      await writeFile(
+        join(dir, "packages", "alpha", "package.json"),
+        JSON.stringify({ name: "@example/alpha", version: "1.0.0" }),
+      );
+      await writeFile(
+        join(dir, "packages", "alpha", "src", "index.test.ts"),
+        "it('a', () => {});\n",
+      );
+
+      const doc = await buildTestInventory(dir);
+
+      expect(doc).toContain("- Test files: 1");
+      expect(doc).not.toContain("| `scripts` |");
+    } finally {
+      await rm(dir, { recursive: true, force: true });
+    }
   });
 });
 

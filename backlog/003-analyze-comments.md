@@ -1,7 +1,7 @@
 ---
 id: 003
 slug: analyze-comments
-status: ready
+status: done
 area: packages/cli
 ---
 
@@ -32,3 +32,12 @@ both `else` and `if`.
 
 - Update the `devkit analyze` paragraph in `docs/commands.md` to say comments
   and strings are ignored.
+
+## Result
+
+`analyzeComplexity` now strips line comments, block comments, and single,
+double, and template string contents before matching decision keywords. The
+duplicate `else if` pattern was removed so each branch of an `else if` chain
+counts once. The result shape is unchanged. Added tests for commented-out
+branches, keywords inside strings, an `else if` chain, and real decision points
+surrounding a comment. Updated `docs/commands.md` to document the behaviour.

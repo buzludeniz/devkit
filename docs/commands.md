@@ -30,7 +30,9 @@ devkit analyze ./src/index.ts
 
 The score is the number of decision points plus one. Decision points cover
 `if`/`else if`, loops, `case`, `catch`, nullish and logical operators, optional
-chaining and ternaries.
+chaining and ternaries. Comments and the contents of single-quoted,
+double-quoted and template string literals are ignored, and each branch of an
+`else if` chain counts once.
 
 ## Repository
 

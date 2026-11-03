@@ -20,17 +20,23 @@ function countTestCases(content: string): number {
   return (content.match(/\b(?:it|test)\s*\(/g) ?? []).length;
 }
 
+function isTestFile(file: string): boolean {
+  return file.endsWith(".test.ts");
+}
+
 export async function collectTestStats(root: string): Promise<PackageTestStats[]> {
   const packages = await listWorkspacePackages(root);
-  const files = await listFiles(root, (file) => file.endsWith(".ts"));
+  const files = [...new Set(await listFiles(root, (file) => file.endsWith(".ts")))];
+  const toRelative = (file: string): string => toPosix(relative(root, file));
 
   const stats: PackageTestStats[] = [];
+  const counted = new Set<string>();
 
-  for (const workspacePackage of packages) {
-    const prefix = `${workspacePackage.directory}/`;
-    const packageFiles = files.filter((file) => toPosix(file).includes(prefix));
-    const testFiles = packageFiles.filter((file) => file.endsWith(".test.ts"));
-    const sourceFiles = packageFiles.filter((file) => !file.endsWith(".test.ts"));
+  const addStats = async (name: string, bucketFiles: string[]): Promise<void> => {
+    const testFiles = bucketFiles.filter(isTestFile);
+    for (const file of testFiles) {
+      counted.add(file);
+    }
 
     let testCases = 0;
     for (const file of testFiles) {
@@ -38,6 +44,7 @@ export async function collectTestStats(root: string): Promise<PackageTestStats[]
       testCases += countTestCases(content);
     }
 
+    const sourceFiles = bucketFiles.filter((file) => !isTestFile(file));
     let sourceLines = 0;
     for (const file of sourceFiles) {
       const content = await readTextFile(file).catch(() => "");
@@ -45,12 +52,30 @@ export async function collectTestStats(root: string): Promise<PackageTestStats[]
     }
 
     stats.push({
-      name: workspacePackage.name,
+      name,
       testFiles: testFiles.length,
       testCases,
       sourceFiles: sourceFiles.length,
       sourceLines,
     });
+  };
+
+  for (const workspacePackage of packages) {
+    const prefix = `${workspacePackage.directory}/`;
+    await addStats(
+      workspacePackage.name,
+      files.filter((file) => toRelative(file).startsWith(prefix)),
+    );
+  }
+
+  const scriptFiles = files.filter((file) => toRelative(file).startsWith("scripts/"));
+  if (scriptFiles.some(isTestFile)) {
+    await addStats("scripts", scriptFiles);
+  }
+
+  const remaining = files.filter((file) => isTestFile(file) && !counted.has(file));
+  if (remaining.length > 0) {
+    await addStats("other", remaining);
   }
 
   return stats;
@@ -81,7 +106,7 @@ export async function buildTestInventory(root: string): Promise<string> {
 
   lines.push("", "## Test files", "");
 
-  const testFiles = await listFiles(root, (file) => file.endsWith(".test.ts"));
+  const testFiles = [...new Set(await listFiles(root, (file) => file.endsWith(".test.ts")))];
 
   for (const file of testFiles) {
     lines.push(`- \`${relative(root, file).split("\\").join("/")}\``);
