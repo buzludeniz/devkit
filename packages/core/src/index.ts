@@ -10,7 +10,5 @@ export class CoreError extends Error {
   }
 }
 
-export interface DevKitConfig {
-  name: string;
-  version: string;
-}
+export * from "./result.js";
+export * from "./config.js";

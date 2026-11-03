@@ -12,8 +12,21 @@ fails on purpose, so silence is never mistaken for success.
 
 | Package | Purpose |
 | --- | --- |
-| `@devkit/core` | Shared types, errors and configuration helpers |
+| `@devkit/core` | Shared types, errors, `Result<T, E>` helpers and configuration loaders |
 | `@devkit/cli` | The `devkit` command line interface |
+
+### Using `@devkit/core`
+
+```typescript
+import { ok, err, unwrap, loadDevKitConfig, type Result } from "@devkit/core";
+
+// Typed result handling without exceptions
+const res: Result<string> = ok("success");
+const value = unwrap(res); // "success"
+
+// Load project configuration (finds devkit.config.json or falls back to package.json)
+const config = loadDevKitConfig();
+```
 
 Commands cover the small jobs that otherwise get a shell alias and a README paragraph:
 

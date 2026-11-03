@@ -1,7 +1,7 @@
 ---
 id: 011
 slug: core-result
-status: ready
+status: done
 area: packages/core
 ---
 
@@ -14,13 +14,13 @@ failure explicit without exceptions.
 
 ## Acceptance criteria
 
-- [ ] Export `type Result<T, E = CoreError> = { ok: true; value: T } |
+- [x] Export `type Result<T, E = CoreError> = { ok: true; value: T } |
       { ok: false; error: E }`.
-- [ ] Export `ok<T>(value: T): Result<T>` and
+- [x] Export `ok<T>(value: T): Result<T>` and
       `err<E>(error: E): Result<never, E>`.
-- [ ] Export `unwrap<T>(result: Result<T>): T` that returns the value or throws
+- [x] Export `unwrap<T>(result: Result<T>): T` that returns the value or throws
       the contained error.
-- [ ] Types are inferred correctly in tests; no `any` appears in the public API.
+- [x] Types are inferred correctly in tests; no `any` appears in the public API.
 
 ## Test plan
 
@@ -30,3 +30,9 @@ failure explicit without exceptions.
 ## Documentation
 
 - Add a short `Result` example to the `@devkit/core` section of `README.md`.
+
+## Result
+
+Added `Result<T, E>`, `ok`, `err`, and `unwrap` to `@devkit/core/src/result.ts`.
+Tested type narrowing, successful unwraps, and error throwing in `result.test.ts`.
+Documented `@devkit/core` usage in `README.md`.
