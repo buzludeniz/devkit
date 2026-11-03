@@ -1,8 +1,8 @@
 import { Command } from "commander";
 import { analyzeCommand } from "./commands/analyze";
 import { apiTestCommand } from "./commands/api";
-import { docsGenerateCommand } from "./commands/docs";
 import { doctorCommand } from "./commands/doctor";
+import { docsGenerateCommand } from "./commands/docs";
 import { envLoadCommand } from "./commands/env";
 import { gitCommand } from "./commands/git";
 import { helloCommand } from "./commands/hello";
