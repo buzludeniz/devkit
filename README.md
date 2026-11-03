@@ -58,20 +58,20 @@ node packages/cli/dist/index.js --help
 
 ## The nightly agent
 
-A Windows scheduled task named **DevKit Nightly Agent** runs at 02:00 every day. It starts a headless
-OpenCode session against a backlog of real engineering work:
+A Windows scheduled task named **DevKit Nightly Agent** runs at 02:00 every day. It runs an isolated
+loop against a backlog of real engineering work, implementing 2–3 scoped features nightly:
 
 ```powershell
-opencode run --standalone --auto --model opencode/deepseek-v4.1-flash-free `
-  --file .nightly/AGENT_PROMPT.md "Execute the nightly work order."
+powershell -NoProfile -ExecutionPolicy Bypass -File scripts/nightly-agent.ps1 -Target 2
 ```
 
 Each run does the following:
 
 1. Refuses to start on a dirty tree, fast-forwards `main`, and creates `nightly/agent-YYYY-MM-DD`.
-2. Plans more backlog items when fewer than ten are ready.
-3. Implements ten items. Every item starts with a failing test, then source, then the documentation
-   the change needs, and ends with one conventional commit tagged `(backlog NNN)`.
+2. Gathers codebase diagnostics (`scripts/gather-backlog-context.ts`) and plans items when ready count is low.
+3. Implements 2–3 items in an isolated per-item loop. Every item starts with a failing test, then source,
+   then documentation, and ends with one conventional commit tagged `(backlog NNN)`. Failed items roll back
+   cleanly without leaving dirty trees.
 4. Runs `scripts/nightly-verify.ts`, which rejects docs-only commits: a counted commit must touch
    non-test source under `packages/*/src` or `scripts/` **and** a `*.test.ts` file.
 5. Runs `pnpm lint`, `pnpm typecheck`, and `pnpm test`.

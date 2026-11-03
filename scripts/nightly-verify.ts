@@ -103,7 +103,7 @@ function main(): void {
   const args = process.argv.slice(2);
   const targetIndex = args.indexOf("--target");
   const baseIndex = args.indexOf("--base");
-  const target = targetIndex >= 0 ? Number(args[targetIndex + 1]) : 10;
+  const target = targetIndex >= 0 ? Number(args[targetIndex + 1]) : 2;
   const base = baseIndex >= 0 ? args[baseIndex + 1] : "main";
 
   const commits = readCommits(base);

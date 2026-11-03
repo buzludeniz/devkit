@@ -5,8 +5,8 @@ not commit.
 
 ## Task
 
-1. Read the repository: source, tests, `README.md`, `docs/`, and open
-   `backlog/*.md` items.
+1. Read the repository: source, tests, `README.md`, `docs/`, `.nightly/DIAGNOSTICS.md`
+   (which highlights codebase markers, TODOs, and gaps), and open `backlog/*.md` items.
 2. Find concrete gaps: bugs, unhandled inputs, missing flags, missing commands,
    weak error messages, and untested edge cases.
 3. Write enough new backlog files to bring the number of `status: ready` items

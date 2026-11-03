@@ -1,5 +1,5 @@
 param(
-  [int]$Target = 10,
+  [int]$Target = 2,
   [string]$Model = "opencode/deepseek-v4.1-flash-free",
   [switch]$NoPush,
   [switch]$SkipTests
@@ -48,6 +48,8 @@ function Write-Status([string]$State, [string]$Detail, [int]$Commits, [string]$P
 function Stop-Run([string]$Message, [int]$Commits = 0) {
   Write-Log "FAILED: $Message"
   Write-Status "failed" $Message $Commits ""
+  & git reset --hard HEAD 2>&1 | Out-Null
+  & git clean -fd 2>&1 | Out-Null
   & git checkout main 2>&1 | Out-Null
   exit 1
 }
@@ -105,7 +107,8 @@ Write-Log "Ready backlog items: $ready"
 
 if ($ready -lt $Target) {
   Write-Log "Planning pass needed: $ready ready, $Target required."
-  $plannerArguments = "Plan new work items. Follow the attached planner prompt exactly. Do not implement anything and do not commit. Leave the backlog files untracked."
+  & pnpm exec tsx scripts/gather-backlog-context.ts 2>&1 | Out-Null
+  $plannerArguments = "Plan new work items. Follow the attached planner prompt and .nightly/DIAGNOSTICS.md. Do not implement anything and do not commit. Leave the backlog files untracked."
   $plannerExit = Invoke-OpenCode "planner" ".nightly\PLANNER_PROMPT.md" $plannerArguments $PlannerLog
   $ready = Get-ReadyCount
   Write-Log "Ready backlog items after planning: $ready (planner exit $plannerExit)"
@@ -115,18 +118,64 @@ if ($ready -lt $Target) {
   Stop-Run "Only $ready ready backlog items; need $Target."
 }
 
-$agentArguments = "Execute the nightly work order in the attached prompt. Complete exactly $Target backlog items, one commit per item. Include any untracked backlog files in your first commit. Do not push. Do not switch branches. Stop after $Target work commits."
+$readyFiles = Get-ChildItem -Path (Join-Path $RepoRoot "backlog") -Filter "*.md" |
+  Where-Object { (Get-Content $_.FullName | Select-String "^status:\s*ready\s*$") } |
+  Sort-Object Name
 
-$agentExit = Invoke-OpenCode "agent" ".nightly\AGENT_PROMPT.md" $agentArguments $AgentLog
-Write-Log "Agent finished with exit code $agentExit"
+$completedCount = 0
 
-$dirtyAfter = & git status --porcelain
-if ($dirtyAfter) {
-  Stop-Run "Agent left uncommitted changes. Inspect $Branch and the agent log."
+foreach ($itemFile in $readyFiles) {
+  if ($completedCount -ge $Target) { break }
+
+  $itemBase = [System.IO.Path]::GetFileNameWithoutExtension($itemFile.Name)
+  Write-Log "Starting backlog item $itemBase ($($completedCount + 1)/$Target)"
+
+  $headBefore = (& git rev-parse HEAD).Trim()
+  $itemLog = Join-Path $LogDir "$Stamp-agent-$itemBase.txt"
+
+  $agentArguments = @"
+Execute the DevKit nightly work order for backlog item $itemBase ONLY.
+Read backlog/$($itemFile.Name) and every file it touches.
+Write a failing test, implement the smallest change, update user-facing docs, set the item's front matter to 'status: done' and append a '## Result' section.
+Make exactly ONE commit: type(scope): summary (backlog $itemBase).
+Do not touch any other backlog item.
+"@
+
+  $agentExit = Invoke-OpenCode "agent-$itemBase" ".nightly\AGENT_PROMPT.md" $agentArguments $itemLog
+  Write-Log "Agent for $itemBase exited with code $agentExit"
+
+  $dirty = & git status --porcelain
+  if ($dirty) {
+    Write-Log "Cleaning uncommitted leftover changes for item $itemBase"
+    & git reset --hard HEAD 2>&1 | Out-Null
+    & git clean -fd 2>&1 | Out-Null
+  }
+
+  $headAfter = (& git rev-parse HEAD).Trim()
+  if ($headAfter -ne $headBefore) {
+    Write-Log "Testing changes for $itemBase"
+    if (-not $SkipTests) {
+      & pnpm test 2>&1 | Out-Null
+      if ($LASTEXITCODE -ne 0) {
+        Write-Log "Tests failed after commit for $itemBase. Rolling back."
+        & git reset --hard $headBefore 2>&1 | Out-Null
+        & git clean -fd 2>&1 | Out-Null
+        continue
+      }
+    }
+    Write-Log "Successfully completed and verified item $itemBase"
+    $completedCount++
+  } else {
+    Write-Log "Item $itemBase produced no commit."
+  }
 }
 
 $commits = [int](& git rev-list --count "main..HEAD")
 Write-Log "Commits on branch: $commits"
+
+if ($commits -lt $Target) {
+  Stop-Run "Completed only $commits verified work commits; needed at least $Target." $commits
+}
 
 Write-Log "Verifying work commits"
 & pnpm exec tsx scripts/nightly-verify.ts --target $Target --base main 2>&1 |

@@ -10,15 +10,15 @@ access and the repository credentials already stored here.
 
 1. Fails fast if the working tree is dirty.
 2. Fast-forwards `main` and creates `nightly/agent-<date>`.
-3. Runs a planning pass when fewer than ten backlog items are ready.
-4. Starts `opencode run --standalone --auto` with `.nightly/AGENT_PROMPT.md`.
+3. Runs a diagnostic and planning pass when fewer than the target backlog items are ready.
+4. Executes backlog items in an isolated per-item loop with OpenCode and `AGENT_PROMPT.md`.
 5. Verifies the branch with `scripts/nightly-verify.ts`.
 6. Runs `pnpm lint`, `pnpm typecheck`, and `pnpm test`.
 7. Pushes the branch and opens or updates a pull request through the GitHub REST API.
 
 The verifier counts only commits that contain both non-test source under `packages/*/src` or
-`scripts/` and a `*.test.ts` file. Ten of those are required. Reports, formatting, and version bumps
-never count.
+`scripts/` and a `*.test.ts` file. At least two of those are required (defaults to `-Target 2`,
+supporting 2–3 depending on scope). Reports, formatting, and version bumps never count.
 
 ## Requirements
 

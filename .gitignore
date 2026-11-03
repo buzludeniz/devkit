@@ -8,4 +8,5 @@ coverage/
 .pnpm-store
 .nightly/logs/
 .nightly/runs/
+.nightly/DIAGNOSTICS.md
 .agent-notify.log
