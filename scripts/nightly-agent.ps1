@@ -198,6 +198,10 @@ if (-not $SkipTests) {
   Write-Log "Running full test suite"
   & pnpm test 2>&1 | Tee-Object -FilePath (Join-Path $LogDir "$Stamp-test.txt") | Select-Object -Last 15
   if ($LASTEXITCODE -ne 0) { Stop-Run "pnpm test failed." $commits }
+
+  Write-Log "Running production build"
+  & pnpm build 2>&1 | Tee-Object -FilePath (Join-Path $LogDir "$Stamp-build.txt") | Select-Object -Last 10
+  if ($LASTEXITCODE -ne 0) { Stop-Run "pnpm build failed." $commits }
 }
 
 $prUrl = ""
