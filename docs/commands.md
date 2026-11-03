@@ -51,10 +51,10 @@ List local branches and mark the current one.
 Send a GET request and assert the response status.
 
 ```bash
-devkit api:test https://api.example.com/health --expect 200 --timeout 5000
+devkit api:test https://api.example.com/health --expect 200 --timeout 5000 --retries 3
 ```
 
-Exits non-zero on a status mismatch, a network error or a timeout.
+Exits non-zero on a status mismatch, a network error or a timeout. Transient failures (network errors, HTTP 408, 429, and 5xx) are retried with exponential backoff (defaults to 2 retries; pass `--retries 0` to disable).
 
 ### `devkit env:load <file>`
 
