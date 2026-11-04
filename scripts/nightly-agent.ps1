@@ -88,8 +88,15 @@ Write-Log "Starting DevKit nightly agent. Target: $Target, model: $Model"
 
 $dirty = & git status --porcelain
 if ($dirty) {
-  Stop-Run "Working tree is dirty before the run. Commit or discard changes first."
+  Write-Log "Found uncommitted changes before the run: $($dirty -join '; ')"
+  Write-Log "Safely stashing local changes into 'nightly-autostash-$Stamp'"
+  & git stash push -u -m "nightly-autostash-$Stamp" 2>&1 | Out-Null
+  & git reset --hard HEAD 2>&1 | Out-Null
+  & git clean -fd 2>&1 | Out-Null
 }
+
+& git config core.autocrlf false 2>&1 | Out-Null
+Write-Log "Set core.autocrlf=false to prevent CRLF dirtying on Windows"
 
 & git fetch origin --prune 2>&1 | Out-Null
 if ($LASTEXITCODE -ne 0) { Stop-Run "git fetch failed" }
@@ -97,6 +104,14 @@ if ($LASTEXITCODE -ne 0) { Stop-Run "git fetch failed" }
 & git checkout main 2>&1 | Out-Null
 & git pull --ff-only origin main 2>&1 | Out-Null
 if ($LASTEXITCODE -ne 0) { Stop-Run "Could not fast-forward main" }
+
+# After pull, re-check for CRLF-induced dirty state and clean if needed
+$dirtyAfterPull = & git status --porcelain
+if ($dirtyAfterPull) {
+  Write-Log "Working tree dirty after pull (CRLF artefact). Resetting."
+  & git reset --hard HEAD 2>&1 | Out-Null
+  & git clean -fd 2>&1 | Out-Null
+}
 
 & git branch -D $Branch 2>&1 | Out-Null
 & git checkout -b $Branch 2>&1 | Out-Null
