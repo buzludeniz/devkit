@@ -1,6 +1,7 @@
 import { Command } from "commander";
 import { analyzeCommand } from "./commands/analyze";
 import { apiTestCommand } from "./commands/api";
+import { configCommand } from "./commands/config";
 import { docsGenerateCommand } from "./commands/docs";
 import { doctorCommand } from "./commands/doctor";
 import { envLoadCommand } from "./commands/env";
@@ -30,6 +31,7 @@ export function createProgram(): Command {
   program.addCommand(docsGenerateCommand());
   program.addCommand(releaseChangelogCommand());
   program.addCommand(pluginLoadCommand());
+  program.addCommand(configCommand());
 
   return program;
 }
