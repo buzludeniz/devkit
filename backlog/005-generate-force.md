@@ -1,7 +1,7 @@
 ---
 id: 005
 slug: generate-force
-status: ready
+status: done
 area: packages/cli
 ---
 
@@ -28,3 +28,16 @@ cannot tell whether they are replacing an existing project.
 ## Documentation
 
 - Add a JSDoc note on the new option in `generate.ts`.
+
+## Result
+
+`generateProject` now accepts an optional `force` flag, documented in its JSDoc
+and defaulting to `false`. Before creating directories or writing files it checks
+`<targetDir>/package.json`; when the file exists without `force`, it throws a
+`CoreError` with code `EEXIST` and leaves the target untouched. `force: true`
+keeps the overwrite path working, and `devkit init` forwards its `--force` flag
+to the guard.
+
+Tests cover the guarded, forced and fresh-directory paths. `@devkit/core` gained
+a `prepare` build so a clean `pnpm install` exposes its entry point to the CLI's
+typecheck and test runs.
