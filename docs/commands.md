@@ -34,6 +34,34 @@ chaining and ternaries. Comments and the contents of single-quoted,
 double-quoted and template string literals are ignored, and each branch of an
 `else if` chain counts once.
 
+## Configuration
+
+### `devkit config`
+
+Read and write project settings in `.devkitrc.json` in the current directory.
+
+```bash
+devkit config list
+devkit config get template
+devkit config set template react-app
+devkit config set color false
+```
+
+`list` prints every setting, falling back to defaults when the file is missing.
+`get <key>` prints one value. `set <key> <value>` merges the value into
+`.devkitrc.json`, creating the file when needed.
+
+Allowed keys:
+
+| Key | Type | Default |
+| --- | --- | --- |
+| `template` | non-empty string | `node-app` |
+| `outputDir` | non-empty string | `.` |
+| `color` | `true` or `false` | `true` |
+
+An unknown key or invalid value prints an error, exits 1, and leaves the file
+unchanged.
+
 ## Repository
 
 ### `devkit git status`

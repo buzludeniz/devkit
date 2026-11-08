@@ -1,7 +1,7 @@
 ---
 id: 007
 slug: config-command
-status: ready
+status: done
 area: packages/cli
 ---
 
@@ -30,3 +30,18 @@ to live. A small project config file fixes that.
 ## Documentation
 
 - Add a `devkit config` section to `docs/commands.md`.
+
+## Result
+
+`devkit config` now reads and writes `.devkitrc.json` through `list`, `get` and
+`set` subcommands. `list` merges the file over the defaults (`template`:
+`node-app`, `outputDir`: `.`, `color`: `true`), `get` prints a single value, and
+`set` creates or updates the file with a stable two-space JSON layout. Unknown
+keys and invalid values (an empty string for `template` or `outputDir`, or a
+non-boolean `color`) print an error, exit 1 and leave the file untouched. The
+command is registered in `createProgram()` and documented in `docs/commands.md`.
+
+Tests in `packages/cli/src/commands/config.test.ts` cover listing defaults,
+merging file values, the set/get round trip, file creation, unknown keys and
+invalid values.
+
