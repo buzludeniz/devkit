@@ -1,6 +1,7 @@
 import { promises as fs } from "node:fs";
 import os from "node:os";
 import path from "node:path";
+import { CoreError } from "@devkit/core";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { generateProject } from "./generate";
 
@@ -65,6 +66,54 @@ describe("generateProject", () => {
     expect(fs.writeFile).toHaveBeenCalledWith(
       path.join(tempDir, "package.json"),
       '{ "name": "my-react-app", "private": true }',
+      "utf-8",
+    );
+  });
+
+  it("throws a CoreError with code EEXIST when package.json exists without force", async () => {
+    const packageJson = path.join(tempDir, "package.json");
+    await fs.writeFile(packageJson, '{"name":"original"}', "utf-8");
+
+    await expect(
+      generateProject({
+        template: "node-app",
+        targetDir: tempDir,
+        projectName: "new-app",
+      }),
+    ).rejects.toMatchObject({ name: "CoreError", code: "EEXIST" });
+  });
+
+  it("does not write any files when the overwrite guard throws", async () => {
+    await fs.writeFile(path.join(tempDir, "package.json"), '{"name":"original"}', "utf-8");
+    vi.mocked(fs.mkdir).mockClear();
+    vi.mocked(fs.writeFile).mockClear();
+
+    await expect(
+      generateProject({
+        template: "node-app",
+        targetDir: tempDir,
+        projectName: "new-app",
+      }),
+    ).rejects.toBeInstanceOf(CoreError);
+
+    expect(fs.mkdir).not.toHaveBeenCalled();
+    expect(fs.writeFile).not.toHaveBeenCalled();
+  });
+
+  it("overwrites an existing package.json when force is true", async () => {
+    const packageJson = path.join(tempDir, "package.json");
+    await fs.writeFile(packageJson, '{"name":"original"}', "utf-8");
+
+    await generateProject({
+      template: "node-app",
+      targetDir: tempDir,
+      projectName: "new-app",
+      force: true,
+    });
+
+    expect(fs.writeFile).toHaveBeenCalledWith(
+      packageJson,
+      '{ "name": "new-app", "version": "0.1.0" }',
       "utf-8",
     );
   });

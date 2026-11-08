@@ -1,7 +1,7 @@
 ---
 id: 005
 slug: generate-force
-status: ready
+status: done
 area: packages/cli
 ---
 
@@ -14,11 +14,11 @@ cannot tell whether they are replacing an existing project.
 
 ## Acceptance criteria
 
-- [ ] `generateProject(template, targetDir)` throws `CoreError` with code
+- [x] `generateProject(template, targetDir)` throws `CoreError` with code
       `EEXIST` when `<targetDir>/package.json` already exists.
-- [ ] `generateProject(template, targetDir, { force: true })` overwrites it.
-- [ ] No partial files are written when the guard throws.
-- [ ] The default stays non-destructive.
+- [x] `generateProject(template, targetDir, { force: true })` overwrites it.
+- [x] No partial files are written when the guard throws.
+- [x] The default stays non-destructive.
 
 ## Test plan
 
@@ -28,3 +28,13 @@ cannot tell whether they are replacing an existing project.
 ## Documentation
 
 - Add a JSDoc note on the new option in `generate.ts`.
+
+## Result
+
+`generateProject` now checks for `<targetDir>/package.json` before creating the
+directory or writing files. Without `force: true` it throws a `CoreError` with
+code `EEXIST` and performs no writes; `force: true` overwrites as before. The
+`devkit init` command forwards its `--force` flag to the new option, and the
+JSDoc on `GenerateOptions.force` documents the behaviour for library callers.
+Covered by tests for the guard, the no-partial-writes guarantee, and forced
+overwrite.

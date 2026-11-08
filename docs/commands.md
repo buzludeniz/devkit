@@ -20,6 +20,11 @@ Options: `-t, --template <name>`, `-d, --dir <directory>`, `-n, --name <name>`,
 The command refuses to overwrite an existing `package.json` and exits non-zero
 unless `--force` is passed. Other files in the target directory are left alone.
 
+The same guard is available to library callers of `generateProject`: it throws
+a `CoreError` with code `EEXIST` before writing anything unless `force: true`
+is set. Every write is skipped when the guard throws, so a failed run leaves
+the target directory untouched.
+
 ### `devkit analyze <file>`
 
 Estimate cyclomatic complexity for a TypeScript file.

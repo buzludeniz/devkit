@@ -31,6 +31,7 @@ export function initCommand(): Command {
           template: options.template,
           targetDir: options.dir,
           projectName: options.name,
+          force: options.force,
         });
         console.log(
           `Project ${options.name} initialized with template ${options.template} in ${options.dir}`,
