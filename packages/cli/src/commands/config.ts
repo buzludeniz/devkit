@@ -1,143 +1,153 @@
-import { existsSync, readFileSync } from "node:fs";
-import { readFile, writeFile } from "node:fs/promises";
-import { join } from "node:path";
+import { promises as fs } from "node:fs";
+import path from "node:path";
 import { Command } from "commander";
 
 export const CONFIG_FILE = ".devkitrc.json";
 
-export interface ProjectConfig {
+export interface DevkitConfig {
   template: string;
   outputDir: string;
   color: boolean;
 }
 
-export const CONFIG_DEFAULTS: ProjectConfig = {
+export const DEFAULT_CONFIG: DevkitConfig = {
   template: "node-app",
   outputDir: ".",
   color: true,
 };
 
-export const CONFIG_KEYS = ["template", "outputDir", "color"] as const;
-
+const CONFIG_KEYS = ["template", "outputDir", "color"] as const;
 export type ConfigKey = (typeof CONFIG_KEYS)[number];
 
-function isConfigKey(key: string): key is ConfigKey {
+export function isConfigKey(key: string): key is ConfigKey {
   return (CONFIG_KEYS as readonly string[]).includes(key);
 }
 
-export function configPath(cwd: string = process.cwd()): string {
-  return join(cwd, CONFIG_FILE);
-}
-
-/** Reads the project config, filling in defaults for missing keys. */
-export function readConfig(cwd: string = process.cwd()): ProjectConfig {
-  const filePath = configPath(cwd);
-  if (!existsSync(filePath)) {
-    return { ...CONFIG_DEFAULTS };
-  }
-
-  const parsed = JSON.parse(readFileSync(filePath, "utf8")) as Record<string, unknown>;
-  if (typeof parsed !== "object" || parsed === null || Array.isArray(parsed)) {
-    throw new Error(`${CONFIG_FILE} must contain a JSON object`);
-  }
-
-  return {
-    template: typeof parsed.template === "string" ? parsed.template : CONFIG_DEFAULTS.template,
-    outputDir: typeof parsed.outputDir === "string" ? parsed.outputDir : CONFIG_DEFAULTS.outputDir,
-    color: typeof parsed.color === "boolean" ? parsed.color : CONFIG_DEFAULTS.color,
-  };
-}
-
-/** Validates a command-line value for an allowed key. */
-export function parseConfigValue(key: ConfigKey, raw: string): string | boolean {
+function parseConfigValue(key: ConfigKey, raw: string): string | boolean {
   if (key === "color") {
-    if (raw === "true") return true;
-    if (raw === "false") return false;
-    throw new Error(`Invalid value for color: "${raw}". Use true or false.`);
+    if (raw !== "true" && raw !== "false") {
+      throw new Error(`Invalid value for color: "${raw}" (expected true or false)`);
+    }
+    return raw === "true";
   }
 
-  const value = raw.trim();
-  if (value === "") {
-    throw new Error(`Invalid value for ${key}: expected a non-empty string.`);
+  if (raw.trim() === "") {
+    throw new Error(`Invalid value for ${key}: value must not be empty`);
   }
-  return value;
+
+  return raw;
 }
 
-async function readRawConfig(cwd: string): Promise<Record<string, unknown>> {
-  const filePath = configPath(cwd);
-  let content: string;
+export async function readConfig(cwd: string = process.cwd()): Promise<DevkitConfig> {
+  const file = path.join(cwd, CONFIG_FILE);
+  let raw: string;
+
   try {
-    content = await readFile(filePath, "utf8");
+    raw = await fs.readFile(file, "utf8");
   } catch (error) {
     if ((error as NodeJS.ErrnoException).code === "ENOENT") {
-      return {};
+      return { ...DEFAULT_CONFIG };
     }
     throw error;
   }
 
-  const parsed = JSON.parse(content) as unknown;
+  let parsed: unknown;
+  try {
+    parsed = JSON.parse(raw);
+  } catch {
+    throw new Error(`${CONFIG_FILE} contains invalid JSON`);
+  }
+
   if (typeof parsed !== "object" || parsed === null || Array.isArray(parsed)) {
     throw new Error(`${CONFIG_FILE} must contain a JSON object`);
   }
-  return parsed as Record<string, unknown>;
+
+  const values = parsed as Record<string, unknown>;
+  const config = { ...DEFAULT_CONFIG };
+
+  if (typeof values.template === "string" && values.template.trim() !== "") {
+    config.template = values.template;
+  }
+  if (typeof values.outputDir === "string" && values.outputDir.trim() !== "") {
+    config.outputDir = values.outputDir;
+  }
+  if (typeof values.color === "boolean") {
+    config.color = values.color;
+  }
+
+  return config;
 }
 
-function fail(error: unknown): void {
-  console.error(error instanceof Error ? error.message : String(error));
+export async function writeConfig(
+  config: DevkitConfig,
+  cwd: string = process.cwd(),
+): Promise<void> {
+  await fs.writeFile(path.join(cwd, CONFIG_FILE), `${JSON.stringify(config, null, 2)}\n`, "utf8");
+}
+
+function reportError(message: string): void {
+  console.error(message);
   process.exitCode = 1;
 }
 
-export function configCommand(cwd: string = process.cwd()): Command {
-  const config = new Command("config").description("Read and write project configuration");
+export function configCommand(): Command {
+  const command = new Command("config").description(
+    "Read and write project settings in .devkitrc.json",
+  );
 
-  config
+  command
     .command("list")
-    .description("Print current settings, including defaults")
-    .action(() => {
-      try {
-        const current = readConfig(cwd);
-        for (const key of CONFIG_KEYS) {
-          console.log(`${key}=${String(current[key])}`);
-        }
-      } catch (error) {
-        fail(error);
+    .description("print current settings, including defaults")
+    .action(async () => {
+      const config = await readConfig();
+      for (const key of CONFIG_KEYS) {
+        console.log(`${key}=${config[key]}`);
       }
     });
 
-  config
+  command
     .command("get")
-    .description("Print one setting")
-    .argument("<key>", `one of ${CONFIG_KEYS.join(", ")}`)
-    .action((key: string) => {
-      try {
-        if (!isConfigKey(key)) {
-          throw new Error(`Unknown config key: ${key}`);
-        }
-        console.log(String(readConfig(cwd)[key]));
-      } catch (error) {
-        fail(error);
+    .description("print one setting")
+    .argument("<key>", "setting name")
+    .action(async (key: string) => {
+      if (!isConfigKey(key)) {
+        reportError(`Unknown config key: ${key}`);
+        return;
       }
+
+      const config = await readConfig();
+      console.log(String(config[key]));
     });
 
-  config
+  command
     .command("set")
-    .description(`Write a setting to ${CONFIG_FILE}`)
-    .argument("<key>", `one of ${CONFIG_KEYS.join(", ")}`)
-    .argument("<value>", "value to store")
+    .description("write a setting to .devkitrc.json")
+    .argument("<key>", "setting name")
+    .argument("<value>", "setting value")
     .action(async (key: string, value: string) => {
-      try {
-        if (!isConfigKey(key)) {
-          throw new Error(`Unknown config key: ${key}`);
-        }
-        const parsed = parseConfigValue(key, value);
-        const raw = await readRawConfig(cwd);
-        raw[key] = parsed;
-        await writeFile(configPath(cwd), `${JSON.stringify(raw, null, 2)}\n`, "utf8");
-        console.log(`${key}=${String(parsed)}`);
-      } catch (error) {
-        fail(error);
+      if (!isConfigKey(key)) {
+        reportError(`Unknown config key: ${key}`);
+        return;
       }
+
+      let parsed: string | boolean;
+      try {
+        parsed = parseConfigValue(key, value);
+      } catch (error) {
+        reportError(error instanceof Error ? error.message : String(error));
+        return;
+      }
+
+      const config = await readConfig();
+      if (key === "color") {
+        config.color = parsed as boolean;
+      } else {
+        config[key] = parsed as string;
+      }
+
+      await writeConfig(config);
+      console.log(`${key}=${config[key]}`);
     });
 
-  return config;
+  return command;
 }

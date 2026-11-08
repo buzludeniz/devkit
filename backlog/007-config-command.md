@@ -33,10 +33,14 @@ to live. A small project config file fixes that.
 
 ## Result
 
-Added the `config.ts` command module and registered it in `createProgram()`.
-`list` merges `.devkitrc.json` over defaults (`template=node-app`,
-`outputDir=.`, `color=true`), `get` prints one value, and `set` validates the
-key and value before writing the file, creating it when missing. Invalid input
-exits 1 without touching the file. Six tests cover defaults, round-trip,
-file creation, unknown keys, an invalid boolean and an empty string.
-Documented in `docs/commands.md`.
+`devkit config` now reads and writes `.devkitrc.json` through `list`, `get` and
+`set` subcommands. `list` merges the file over the defaults (`template`:
+`node-app`, `outputDir`: `.`, `color`: `true`), `get` prints a single value, and
+`set` creates or updates the file with a stable two-space JSON layout. Unknown
+keys and invalid values (an empty string for `template` or `outputDir`, or a
+non-boolean `color`) print an error, exit 1 and leave the file untouched. The
+command is registered in `createProgram()` and documented in `docs/commands.md`.
+
+Tests in `packages/cli/src/commands/config.test.ts` cover listing defaults,
+merging file values, the set/get round trip, file creation, unknown keys and
+invalid values.
