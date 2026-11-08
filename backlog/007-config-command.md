@@ -14,13 +14,13 @@ to live. A small project config file fixes that.
 
 ## Acceptance criteria
 
-- [ ] `devkit config list` prints the current settings, including defaults.
-- [ ] `devkit config get <key>` prints one value; an unknown key exits 1.
-- [ ] `devkit config set <key> <value>` writes `.devkitrc.json` in the current
+- [x] `devkit config list` prints the current settings, including defaults.
+- [x] `devkit config get <key>` prints one value; an unknown key exits 1.
+- [x] `devkit config set <key> <value>` writes `.devkitrc.json` in the current
       directory and creates the file when missing.
-- [ ] Allowed keys: `template` (non-empty string), `outputDir` (non-empty
+- [x] Allowed keys: `template` (non-empty string), `outputDir` (non-empty
       string), `color` (`true` or `false`).
-- [ ] Invalid keys or values exit 1 and leave the file unchanged.
+- [x] Invalid keys or values exit 1 and leave the file unchanged.
 
 ## Test plan
 
@@ -44,4 +44,3 @@ command is registered in `createProgram()` and documented in `docs/commands.md`.
 Tests in `packages/cli/src/commands/config.test.ts` cover listing defaults,
 merging file values, the set/get round trip, file creation, unknown keys and
 invalid values.
-

@@ -9,9 +9,9 @@ export interface GenerateOptions {
   /**
    * Overwrite an existing `package.json` in the target directory.
    *
-   * Defaults to `false`, so `generateProject` throws a `CoreError` with code
-   * `EEXIST` before writing anything when the target already looks like a
-   * project. Pass `true` to replace it.
+   * Defaults to `false`. Without it, {@link generateProject} throws a
+   * {@link CoreError} with code `EEXIST` and writes no files when
+   * `<targetDir>/package.json` already exists.
    */
   force?: boolean;
 }
@@ -23,16 +23,21 @@ const TEMPLATE_FILES: Record<string, Array<{ source: string; dest: string }>> = 
   "react-app": [{ source: "react-app.json", dest: "package.json" }],
 };
 
-async function packageJsonExists(targetDir: string): Promise<boolean> {
+async function assertCanWrite(targetDir: string, force: boolean): Promise<void> {
+  if (force) return;
+
+  const packageJson = path.join(targetDir, "package.json");
   try {
-    await fs.access(path.join(targetDir, "package.json"));
-    return true;
+    await fs.access(packageJson);
   } catch (error) {
-    if ((error as NodeJS.ErrnoException).code === "ENOENT") {
-      return false;
-    }
+    if ((error as NodeJS.ErrnoException).code === "ENOENT") return;
     throw error;
   }
+
+  throw new CoreError(
+    `Refusing to overwrite existing file: ${packageJson}. Pass force: true to overwrite.`,
+    "EEXIST",
+  );
 }
 
 export async function generateProject(options: GenerateOptions): Promise<void> {
@@ -43,12 +48,7 @@ export async function generateProject(options: GenerateOptions): Promise<void> {
     throw new Error(`Unknown template: ${template}`);
   }
 
-  if (!force && (await packageJsonExists(targetDir))) {
-    throw new CoreError(
-      `Refusing to overwrite existing file: ${path.join(targetDir, "package.json")}. Use force to overwrite.`,
-      "EEXIST",
-    );
-  }
+  await assertCanWrite(targetDir, force);
 
   await fs.mkdir(targetDir, { recursive: true });
 

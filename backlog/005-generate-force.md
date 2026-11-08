@@ -14,11 +14,11 @@ cannot tell whether they are replacing an existing project.
 
 ## Acceptance criteria
 
-- [ ] `generateProject(template, targetDir)` throws `CoreError` with code
+- [x] `generateProject(template, targetDir)` throws `CoreError` with code
       `EEXIST` when `<targetDir>/package.json` already exists.
-- [ ] `generateProject(template, targetDir, { force: true })` overwrites it.
-- [ ] No partial files are written when the guard throws.
-- [ ] The default stays non-destructive.
+- [x] `generateProject(template, targetDir, { force: true })` overwrites it.
+- [x] No partial files are written when the guard throws.
+- [x] The default stays non-destructive.
 
 ## Test plan
 
@@ -31,13 +31,11 @@ cannot tell whether they are replacing an existing project.
 
 ## Result
 
-`generateProject` now accepts an optional `force` flag, documented in its JSDoc
-and defaulting to `false`. Before creating directories or writing files it checks
-`<targetDir>/package.json`; when the file exists without `force`, it throws a
-`CoreError` with code `EEXIST` and leaves the target untouched. `force: true`
-keeps the overwrite path working, and `devkit init` forwards its `--force` flag
-to the guard.
-
-Tests cover the guarded, forced and fresh-directory paths. `@devkit/core` gained
-a `prepare` build so a clean `pnpm install` exposes its entry point to the CLI's
-typecheck and test runs.
+`generateProject` now checks for `<targetDir>/package.json` before creating the
+directory or writing files. Without `force: true` it throws a `CoreError` with
+code `EEXIST` and performs no writes; `force: true` overwrites as before. The
+`devkit init` command forwards its `--force` flag to the new option, and the
+JSDoc on `GenerateOptions.force` documents the behaviour for library callers.
+Covered by tests for the guard, the no-partial-writes guarantee, and forced
+overwrite. `@devkit/core` also gained a `prepare` build so a clean `pnpm install`
+exposes its entry point to the CLI's typecheck and test runs.

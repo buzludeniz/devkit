@@ -20,6 +20,35 @@ Options: `-t, --template <name>`, `-d, --dir <directory>`, `-n, --name <name>`,
 The command refuses to overwrite an existing `package.json` and exits non-zero
 unless `--force` is passed. Other files in the target directory are left alone.
 
+The same guard is available to library callers of `generateProject`: it throws
+a `CoreError` with code `EEXIST` before writing anything unless `force: true`
+is set. Every write is skipped when the guard throws, so a failed run leaves
+the target directory untouched.
+
+### `devkit config`
+
+Read and write project settings in `.devkitrc.json` in the current directory.
+
+```bash
+devkit config list
+devkit config get template
+devkit config set template react-app
+devkit config set color false
+```
+
+| Key | Type | Default |
+| --- | --- | --- |
+| `template` | non-empty string | `node-app` |
+| `outputDir` | non-empty string | `.` |
+| `color` | `true` or `false` | `true` |
+
+`list` prints the effective settings, including defaults for keys that are not
+in the file. `get` prints one value. `set` writes the key to `.devkitrc.json`,
+creating the file when missing and keeping any other keys already stored.
+
+Unknown keys and invalid values (including an empty string or a boolean other
+than `true`/`false`) exit 1 and leave the file unchanged.
+
 ### `devkit analyze <file>`
 
 Estimate cyclomatic complexity for a TypeScript file.
