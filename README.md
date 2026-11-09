@@ -2,9 +2,10 @@
 
 A developer productivity CLI, and a working example of a repository that maintains itself.
 
-Every night a scheduled workflow runs ten independent maintenance tasks. Each task inspects the
-repository, writes a report, and commits the result. A run that produces fewer than ten commits
-fails on purpose, so silence is never mistaken for success.
+Every night a scheduled agent picks items from the repository's own backlog, implements each one
+test-first, verifies the result, and opens a pull request. A run that cannot produce its target number
+of verified work commits fails on purpose, so silence is never mistaken for success. A separate report
+pipeline runs ten maintenance tasks that each inspect the repository and commit a report.
 
 ## What it does
 
@@ -36,9 +37,9 @@ devkit doctor                                  # verify toolchain and repository
 devkit git status                          # parsed repository state
 devkit analyze ./src/index.ts              # decision-point complexity
 devkit api:test https://example.com/health # HTTP health check
-devkit env:load .env --required API_URL    # validate and mask environment files
+devkit env:load .env --required API_URL --mask   # validate and mask environment files
 devkit docs:generate                       # collect JSDoc exports into Markdown
-devkit release:changelog --version 1.2.0   # changelog from conventional commits
+devkit release:changelog                   # changelog from conventional commits
 devkit plugin:load ./plugin.mjs --run      # load an external plugin
 ```
 
@@ -59,7 +60,7 @@ node packages/cli/dist/index.js --help
 ## The nightly agent
 
 A Windows scheduled task named **DevKit Nightly Agent** runs at 02:00 every day. It runs an isolated
-loop against a backlog of real engineering work, implementing 2–3 scoped features nightly:
+loop against a backlog of real engineering work, implementing `-Target` scoped items per night (default 2):
 
 ```powershell
 powershell -NoProfile -ExecutionPolicy Bypass -File scripts/nightly-agent.ps1 -Target 2
@@ -67,18 +68,19 @@ powershell -NoProfile -ExecutionPolicy Bypass -File scripts/nightly-agent.ps1 -T
 
 Each run does the following:
 
-1. Refuses to start on a dirty tree, fast-forwards `main`, and creates `nightly/agent-YYYY-MM-DD`.
+1. Stashes any uncommitted changes (`nightly-autostash-*`), fast-forwards `main`, and creates
+   `nightly/agent-YYYY-MM-DD`.
 2. Gathers codebase diagnostics (`scripts/gather-backlog-context.ts`) and plans items when ready count is low.
-3. Implements 2–3 items in an isolated per-item loop. Every item starts with a failing test, then source,
+3. Implements `-Target` items in an isolated per-item loop. Every item starts with a failing test, then source,
    then documentation, and ends with one conventional commit tagged `(backlog NNN)`. Failed items roll back
    cleanly without leaving dirty trees.
 4. Runs `scripts/nightly-verify.ts`, which rejects docs-only commits: a counted commit must touch
    non-test source under `packages/*/src` or `scripts/` **and** a `*.test.ts` file.
-5. Runs `pnpm lint`, `pnpm typecheck`, and `pnpm test`.
-6. Pushes the branch and opens or updates a pull request with the ten commits. Nothing lands on
+5. Runs `pnpm lint`, `pnpm typecheck`, `pnpm test`, and `pnpm build`; any failure stops the run.
+6. Pushes the branch and opens or updates a pull request with the verified commits. Nothing lands on
    `main` without review.
 
-A run that cannot produce ten verified work commits fails before pushing anything. The previous
+A run that cannot produce `-Target` verified work commits fails before pushing anything. The previous
 commit count is never padded with reports or formatting.
 
 The report generator still exists for manual use. `.github/workflows/nightly-maintenance.yml` is
@@ -108,7 +110,7 @@ scripts/
   run-nightly.ts        report pipeline entry point
   nightly-tasks/        task base classes, runner and the ten report tasks
   test-nightly-e2e.ts   isolated end-to-end verification
-backlog/                ready, in-progress and done work items
+backlog/                ready and done work items
 .nightly/               agent and planner prompts, run logs
 docs/                   VitePress site and generated reports
 ```
@@ -126,8 +128,8 @@ pnpm build
 pnpm docs:dev    # local documentation site
 ```
 
-Tests use Vitest. Commands and their helpers are written test-first, and every command module keeps
-its tests beside it.
+Tests use Vitest. Commands and their helpers are written test-first, and command helpers keep
+their tests beside them.
 
 ## Releasing
 
