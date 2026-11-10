@@ -5,7 +5,7 @@ status: done
 area: packages/core
 ---
 
-# Add `Result` helpers to `@devkit/core`
+# Add `Result` helpers to `@buzludeniz/devkit-core`
 
 ## Context
 
@@ -29,10 +29,10 @@ failure explicit without exceptions.
 
 ## Documentation
 
-- Add a short `Result` example to the `@devkit/core` section of `README.md`.
+- Add a short `Result` example to the `@buzludeniz/devkit-core` section of `README.md`.
 
 ## Result
 
-Added `Result<T, E>`, `ok`, `err`, and `unwrap` to `@devkit/core/src/result.ts`.
+Added `Result<T, E>`, `ok`, `err`, and `unwrap` to `@buzludeniz/devkit-core/src/result.ts`.
 Tested type narrowing, successful unwraps, and error throwing in `result.test.ts`.
-Documented `@devkit/core` usage in `README.md`.
+Documented `@buzludeniz/devkit-core` usage in `README.md`.

@@ -5,11 +5,11 @@ status: ready
 area: packages/core
 ---
 
-# Add dotenv parser and masking serializer to `@devkit/core`
+# Add dotenv parser and masking serializer to `@buzludeniz/devkit-core`
 
 ## Context
 
-Dotenv parsing logic is currently embedded in CLI commands. Moving it to `@devkit/core` allows plugins and CLI commands to share robust parsing, comments handling, and secret masking.
+Dotenv parsing logic is currently embedded in CLI commands. Moving it to `@buzludeniz/devkit-core` allows plugins and CLI commands to share robust parsing, comments handling, and secret masking.
 
 ## Acceptance criteria
 
@@ -24,4 +24,4 @@ Dotenv parsing logic is currently embedded in CLI commands. Moving it to `@devki
 
 ## Documentation
 
-- Document env helpers in the `@devkit/core` section of `README.md`.
+- Document env helpers in the `@buzludeniz/devkit-core` section of `README.md`.

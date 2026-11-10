@@ -57,8 +57,8 @@ async function main(): Promise<void> {
   lines.push(
     "## Recommended Focus Areas",
     "",
-    "1. `@devkit/core`: Configuration loaders, result handlers, plugin lifecycles, and shared process utilities.",
-    "2. `@devkit/cli`: Flags (`--json`, `--force`, `--dry-run`), new productivity commands, and robust input validation.",
+    "1. `@buzludeniz/devkit-core`: Configuration loaders, result handlers, plugin lifecycles, and shared process utilities.",
+    "2. `@buzludeniz/devkit-cli`: Flags (`--json`, `--force`, `--dry-run`), new productivity commands, and robust input validation.",
     "3. Quality & Edge Cases: Timeout handling, flaky test hardening, and informative error messages.",
     "",
   );

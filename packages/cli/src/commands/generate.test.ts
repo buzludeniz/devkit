@@ -1,9 +1,9 @@
 import { promises as fs } from "node:fs";
 import os from "node:os";
 import path from "node:path";
-import { CoreError } from "@devkit/core";
+import { CoreError } from "@buzludeniz/devkit-core";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import { generateProject } from "./generate";
+import { generateProject } from "./generate.js";
 
 vi.mock("fs", async (importOriginal) => {
   const actual = await importOriginal<typeof import("fs")>();

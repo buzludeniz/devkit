@@ -17,7 +17,7 @@ Scaffold new packages under `packages/*` with tsconfig, vitest, and package.json
 
 - `devkit scaffold <name> --type lib|cli`
 - Creates `packages/<name>/` with:
-  - `package.json` with `name: @devkit/<name>`, `type: module`
+  - `package.json` with `name: @buzludeniz/devkit-<name>`, `type: module`
   - `tsconfig.json` extending root tsconfig
   - `src/index.ts` stub
   - `src/index.test.ts` stub

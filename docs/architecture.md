@@ -7,17 +7,17 @@ published packages depend on each other.
 
 ```mermaid
 graph TD
-  _devkit_cli["@devkit/cli"] --> _devkit_core["@devkit/core"]
+  _buzludeniz_devkit_cli["@buzludeniz/devkit-cli"] --> _buzludeniz_devkit_core["@buzludeniz/devkit-core"]
 ```
 
 ## Packages
 
 | Package | Version | Responsibility |
 | --- | --- | --- |
-| `@devkit/cli` | 0.1.0 | CLI entry point for devkit |
-| `@devkit/core` | 0.1.0 | Core utilities and shared types for devkit |
+| `@buzludeniz/devkit-cli` | 0.1.0 | CLI entry point for devkit |
+| `@buzludeniz/devkit-core` | 0.1.0 | Core utilities and shared types for devkit |
 
 ## Workspace dependencies
 
-- **@devkit/cli**: @devkit/core, commander
-- **@devkit/core**: no runtime dependencies
+- **@buzludeniz/devkit-cli**: @buzludeniz/devkit-core, commander
+- **@buzludeniz/devkit-core**: no runtime dependencies

@@ -5,7 +5,7 @@ status: ready
 area: packages/core
 ---
 
-# Add typed git runner to `@devkit/core`
+# Add typed git runner to `@buzludeniz/devkit-core`
 
 ## Context
 
@@ -13,7 +13,7 @@ CLI commands and nightly scripts run raw child process git commands and duplicat
 
 ## Acceptance criteria
 
-- [ ] Export `runGit(args: string[], cwd?: string): Promise<Result<string, CoreError>>` from `@devkit/core`.
+- [ ] Export `runGit(args: string[], cwd?: string): Promise<Result<string, CoreError>>` from `@buzludeniz/devkit-core`.
 - [ ] Returns `ok(stdout.trim())` on exit code 0.
 - [ ] Returns `err(new CoreError(stderr.trim(), "GIT_ERROR"))` on non-zero exits without throwing uncaught exceptions.
 - [ ] Allows custom timeout option with abort signal support.
@@ -24,4 +24,4 @@ CLI commands and nightly scripts run raw child process git commands and duplicat
 
 ## Documentation
 
-- Document `runGit` in the `@devkit/core` section of `README.md`.
+- Document `runGit` in the `@buzludeniz/devkit-core` section of `README.md`.

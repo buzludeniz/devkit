@@ -1,6 +1,6 @@
 import { Command } from "commander";
-import { getBranches } from "./git-branch";
-import { getGitStatus } from "./git-status";
+import { getBranches } from "./git-branch.js";
+import { getGitStatus } from "./git-status.js";
 
 export function gitCommand(): Command {
   const git = new Command("git").description("Git workflow helpers");

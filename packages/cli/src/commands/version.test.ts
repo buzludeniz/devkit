@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { versionCommand } from "./version";
+import { versionCommand } from "./version.js";
 
 describe("versionCommand", () => {
   it("exists and has name version", () => {

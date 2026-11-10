@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import type { DevKitConfig } from "./types";
+import type { DevKitConfig } from "./types.js";
 
 describe("DevKitConfig", () => {
   it("has required fields", () => {

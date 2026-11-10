@@ -14,8 +14,8 @@ This creates a markdown file in `.changeset/` with a frontmatter block like:
 
 ```markdown
 ---
-"@devkit/core": patch
-"@devkit/cli": minor
+"@buzludeniz/devkit-core": patch
+"@buzludeniz/devkit-cli": minor
 ---
 
 Add new `init` command for project scaffolding

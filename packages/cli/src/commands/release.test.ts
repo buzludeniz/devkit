@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { buildChangelog, parseCommitSubject } from "./release";
+import { buildChangelog, parseCommitSubject } from "./release.js";
 
 describe("parseCommitSubject", () => {
   it("parses type, scope and description", () => {

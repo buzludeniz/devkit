@@ -24,8 +24,8 @@ describe("project status", () => {
 
     expect(status.schemaVersion).toBe(1);
     expect(status.packages.map((entry) => entry.name).sort()).toEqual([
-      "@devkit/cli",
-      "@devkit/core",
+      "@buzludeniz/devkit-cli",
+      "@buzludeniz/devkit-core",
     ]);
     expect(status.totals.sourceFiles).toBeGreaterThan(0);
     expect(status.totals.testCases).toBeGreaterThan(0);
@@ -38,8 +38,8 @@ describe("architecture doc", () => {
 
     expect(doc).toContain("# Architecture");
     expect(doc).toContain("```mermaid");
-    expect(doc).toContain("@devkit/cli");
-    expect(doc).toContain("@devkit/core");
+    expect(doc).toContain("@buzludeniz/devkit-cli");
+    expect(doc).toContain("@buzludeniz/devkit-core");
   });
 });
 
@@ -113,8 +113,8 @@ describe("test inventory", () => {
     const doc = await buildTestInventory(repoRoot);
 
     expect(doc).toContain("# Test inventory");
-    expect(doc).toContain("@devkit/cli");
-    expect(doc).toMatch(/\| `@devkit\/cli` \| [1-9]\d* \|/);
+    expect(doc).toContain("@buzludeniz/devkit-cli");
+    expect(doc).toMatch(/\| `@buzludeniz\/devkit-cli` \| [1-9]\d* \|/);
   });
 
   it("counts script tests in the totals and adds a scripts row", async () => {
@@ -206,7 +206,7 @@ describe("api reference", () => {
     const doc = await buildApiReference(repoRoot);
 
     expect(doc).toContain("# API reference");
-    expect(doc).toContain("## @devkit/core");
+    expect(doc).toContain("## @buzludeniz/devkit-core");
     expect(doc).toContain("createProgram");
   });
 });

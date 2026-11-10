@@ -14,7 +14,7 @@ describe("syncManifest", () => {
       "publishConfig",
     ]);
     expect(manifest.license).toBe("MIT");
-    expect(manifest.engines).toEqual({ node: ">=20.0.0" });
+    expect(manifest.engines).toEqual({ node: ">=22.0.0" });
   });
 
   it("never overwrites values the author already set", () => {

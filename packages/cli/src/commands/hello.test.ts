@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { helloCommand } from "./hello";
+import { helloCommand } from "./hello.js";
 
 describe("helloCommand", () => {
   it("exists and has name hello", () => {

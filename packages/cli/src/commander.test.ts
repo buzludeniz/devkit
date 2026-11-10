@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { createProgram } from "./commander";
+import { createProgram } from "./commander.js";
 
 describe("createProgram", () => {
   it("creates a Commander program with name devkit", () => {

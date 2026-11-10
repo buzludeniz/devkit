@@ -4,7 +4,7 @@
 
 Every symbol exported from the workspace packages, grouped by package.
 
-## @devkit/cli
+## @buzludeniz/devkit-cli
 
 | Symbol | Kind | Defined in |
 | --- | --- | --- |
@@ -49,7 +49,7 @@ Every symbol exported from the workspace packages, grouped by package.
 | `releaseChangelogCommand` | function | `packages/cli/src/commands/release.ts` |
 | `versionCommand` | function | `packages/cli/src/commands/version.ts` |
 
-## @devkit/core
+## @buzludeniz/devkit-core
 
 | Symbol | Kind | Defined in |
 | --- | --- | --- |

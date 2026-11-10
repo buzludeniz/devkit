@@ -2,7 +2,7 @@ import { promises as fs } from "node:fs";
 import os from "node:os";
 import path from "node:path";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import { DEFAULT_CONFIG, configCommand } from "./config";
+import { DEFAULT_CONFIG, configCommand } from "./config.js";
 
 describe("devkit config", () => {
   let tempDir: string;

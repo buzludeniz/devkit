@@ -38,7 +38,7 @@ importers:
 
   packages/cli:
     dependencies:
-      '@devkit/core':
+      '@buzludeniz/devkit-core':
         specifier: workspace:*
         version: link:../core
       commander:
