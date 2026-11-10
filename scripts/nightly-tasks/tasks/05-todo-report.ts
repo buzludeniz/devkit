@@ -1,4 +1,4 @@
-import { join, relative } from "node:path";
+import { relative } from "node:path";
 import { listFiles, readTextFile } from "../lib/repo.js";
 import { ReportTask } from "../task-base.js";
 

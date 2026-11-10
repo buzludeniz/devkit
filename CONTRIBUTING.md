@@ -2,7 +2,7 @@
 
 ## Setup
 
-Node 22 or newer, pnpm 9.
+Node 22.12 or newer, pnpm 12.
 
 ```bash
 pnpm install
