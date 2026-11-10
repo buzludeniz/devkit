@@ -1,5 +1,5 @@
 import { Command } from "commander";
-import { analyzeComplexity } from "./analyze-complexity";
+import { analyzeComplexity } from "./analyze-complexity.js";
 
 export function analyzeCommand(): Command {
   return new Command("analyze")

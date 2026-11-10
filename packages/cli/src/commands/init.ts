@@ -1,7 +1,7 @@
 import { promises as fs } from "node:fs";
 import path from "node:path";
 import { Command } from "commander";
-import { generateProject } from "./generate";
+import { generateProject } from "./generate.js";
 
 async function assertCanWrite(targetDir: string, force: boolean): Promise<void> {
   if (force) return;

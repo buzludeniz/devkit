@@ -1,16 +1,20 @@
+import { createRequire } from "node:module";
 import { Command } from "commander";
-import { analyzeCommand } from "./commands/analyze";
-import { apiTestCommand } from "./commands/api";
-import { configCommand } from "./commands/config";
-import { docsGenerateCommand } from "./commands/docs";
-import { doctorCommand } from "./commands/doctor";
-import { envLoadCommand } from "./commands/env";
-import { gitCommand } from "./commands/git";
-import { helloCommand } from "./commands/hello";
-import { initCommand } from "./commands/init";
-import { pluginLoadCommand } from "./commands/plugin";
-import { releaseChangelogCommand } from "./commands/release";
-import { versionCommand } from "./commands/version";
+import { analyzeCommand } from "./commands/analyze.js";
+import { apiTestCommand } from "./commands/api.js";
+import { configCommand } from "./commands/config.js";
+import { docsGenerateCommand } from "./commands/docs.js";
+import { doctorCommand } from "./commands/doctor.js";
+import { envLoadCommand } from "./commands/env.js";
+import { gitCommand } from "./commands/git.js";
+import { helloCommand } from "./commands/hello.js";
+import { initCommand } from "./commands/init.js";
+import { pluginLoadCommand } from "./commands/plugin.js";
+import { releaseChangelogCommand } from "./commands/release.js";
+import { versionCommand } from "./commands/version.js";
+
+const require = createRequire(import.meta.url);
+const { version } = require("../package.json") as { version: string };
 
 export function createProgram(): Command {
   const program = new Command();
@@ -18,7 +22,7 @@ export function createProgram(): Command {
   program
     .name("devkit")
     .description("Developer productivity CLI")
-    .version(require("../package.json").version, "-v, --version", "output the version number");
+    .version(version, "-v, --version", "output the version number");
 
   program.addCommand(helloCommand());
   program.addCommand(versionCommand());

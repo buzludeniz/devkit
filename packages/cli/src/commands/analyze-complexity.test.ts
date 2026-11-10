@@ -1,6 +1,6 @@
 import { promises as fs } from "node:fs";
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import { analyzeComplexity } from "./analyze-complexity";
+import { analyzeComplexity } from "./analyze-complexity.js";
 
 const { readFileMock } = vi.hoisted(() => ({ readFileMock: vi.fn() }));
 

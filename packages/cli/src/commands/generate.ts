@@ -1,6 +1,7 @@
 import { promises as fs } from "node:fs";
 import path from "node:path";
-import { CoreError } from "@devkit/core";
+import { fileURLToPath } from "node:url";
+import { CoreError } from "@buzludeniz/devkit-core";
 
 export interface GenerateOptions {
   template: string;
@@ -16,7 +17,7 @@ export interface GenerateOptions {
   force?: boolean;
 }
 
-const TEMPLATES_DIR = path.join(__dirname, "templates");
+const TEMPLATES_DIR = fileURLToPath(new URL("./templates/", import.meta.url));
 
 const TEMPLATE_FILES: Record<string, Array<{ source: string; dest: string }>> = {
   "node-app": [{ source: "node-app.json", dest: "package.json" }],

@@ -2,7 +2,7 @@ import { promises as fs } from "node:fs";
 import os from "node:os";
 import path from "node:path";
 import { type MockInstance, afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import { initCommand } from "./init";
+import { initCommand } from "./init.js";
 
 class ExitError extends Error {
   constructor(readonly code: number) {

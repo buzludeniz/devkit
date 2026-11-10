@@ -2,7 +2,7 @@ import { mkdtemp, rm, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { afterEach, describe, expect, it, vi } from "vitest";
-import { loadPlugin, validatePlugin } from "./plugin";
+import { loadPlugin, validatePlugin } from "./plugin.js";
 
 const created: string[] = [];
 
