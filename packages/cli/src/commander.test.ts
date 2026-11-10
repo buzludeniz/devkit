@@ -58,7 +58,7 @@ describe("createProgram", () => {
         "  doctor [options]              Check development toolchain and repository",
         "                                health",
         "  git                           Git workflow helpers",
-        "  analyze <path>                Analyze code complexity",
+        "  analyze [options] <path>      Analyze code complexity",
         "  api:test [options] <url>      Send a GET request and assert the response",
         "                                status",
         "  env:load [options] <file>     Parse a .env file and report its variables",
