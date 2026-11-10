@@ -10,3 +10,4 @@ coverage/
 .nightly/runs/
 .nightly/DIAGNOSTICS.md
 .agent-notify.log
+.serena/

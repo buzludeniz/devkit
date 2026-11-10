@@ -1,7 +1,7 @@
 import { existsSync, readFileSync } from "node:fs";
 import { join, resolve } from "node:path";
 import { CoreError } from "./index.js";
-import { type Result, err, ok } from "./result.js";
+import { err, ok, type Result } from "./result.js";
 
 export interface DevKitConfig {
   name: string;
