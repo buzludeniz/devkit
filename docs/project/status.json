@@ -6,9 +6,9 @@
       "version": "0.1.0",
       "description": "CLI entry point for devkit",
       "sourceFiles": 20,
-      "sourceLines": 1428,
-      "testFiles": 16,
-      "testCases": 91
+      "sourceLines": 1439,
+      "testFiles": 18,
+      "testCases": 98
     },
     {
       "name": "@buzludeniz/devkit-core",
@@ -23,10 +23,10 @@
   "totals": {
     "packages": 2,
     "sourceFiles": 46,
-    "sourceLines": 3414,
-    "testFiles": 28,
-    "testCases": 142,
-    "documentationFiles": 86
+    "sourceLines": 3425,
+    "testFiles": 30,
+    "testCases": 149,
+    "documentationFiles": 87
   },
   "scripts": {
     "dev": "pnpm --filter @buzludeniz/devkit-cli dev",
