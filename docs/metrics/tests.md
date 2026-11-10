@@ -7,8 +7,8 @@
 
 | Package | Test files | Test cases | Source files | Source lines |
 | --- | --- | --- | --- | --- |
-| `@devkit/cli` | 14 | 64 | 18 | 1125 |
-| `@devkit/core` | 3 | 8 | 5 | 119 |
+| `@buzludeniz/devkit-cli` | 14 | 64 | 18 | 1125 |
+| `@buzludeniz/devkit-core` | 3 | 8 | 5 | 119 |
 | `scripts` | 8 | 41 | 20 | 1860 |
 
 ## Test files

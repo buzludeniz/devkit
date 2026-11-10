@@ -2,7 +2,7 @@
   "schemaVersion": 1,
   "packages": [
     {
-      "name": "@devkit/cli",
+      "name": "@buzludeniz/devkit-cli",
       "version": "0.1.0",
       "description": "CLI entry point for devkit",
       "sourceFiles": 17,
@@ -11,7 +11,7 @@
       "testCases": 44
     },
     {
-      "name": "@devkit/core",
+      "name": "@buzludeniz/devkit-core",
       "version": "0.1.0",
       "description": "Core utilities and shared types for devkit",
       "sourceFiles": 3,
@@ -29,12 +29,12 @@
     "documentationFiles": 19
   },
   "scripts": {
-    "dev": "pnpm --filter @devkit/cli dev",
-    "build": "pnpm --filter @devkit/core build && pnpm --filter @devkit/cli build",
+    "dev": "pnpm --filter @buzludeniz/devkit-cli dev",
+    "build": "pnpm --filter @buzludeniz/devkit-core build && pnpm --filter @buzludeniz/devkit-cli build",
     "lint": "biome check packages scripts",
     "lint:fix": "biome check --write --unsafe packages scripts",
-    "test": "pnpm --filter @devkit/core test && pnpm --filter @devkit/cli test && vitest run",
-    "typecheck": "pnpm --filter @devkit/core typecheck && pnpm --filter @devkit/cli typecheck && tsc -p scripts/tsconfig.json",
+    "test": "pnpm --filter @buzludeniz/devkit-core test && pnpm --filter @buzludeniz/devkit-cli test && vitest run",
+    "typecheck": "pnpm --filter @buzludeniz/devkit-core typecheck && pnpm --filter @buzludeniz/devkit-cli typecheck && tsc -p scripts/tsconfig.json",
     "nightly:maintenance": "tsx scripts/run-nightly.ts",
     "docs:dev": "vitepress dev docs",
     "docs:build": "vitepress build docs",

@@ -37,5 +37,5 @@ code `EEXIST` and performs no writes; `force: true` overwrites as before. The
 `devkit init` command forwards its `--force` flag to the new option, and the
 JSDoc on `GenerateOptions.force` documents the behaviour for library callers.
 Covered by tests for the guard, the no-partial-writes guarantee, and forced
-overwrite. `@devkit/core` also gained a `prepare` build so a clean `pnpm install`
+overwrite. `@buzludeniz/devkit-core` also gained a `prepare` build so a clean `pnpm install`
 exposes its entry point to the CLI's typecheck and test runs.

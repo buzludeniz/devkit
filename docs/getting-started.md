@@ -7,7 +7,7 @@ generation and changelog drafting.
 
 ## Requirements
 
-- Node.js 20 or newer
+- Node.js 22 or newer
 - pnpm 9
 
 ## Install from source
@@ -22,7 +22,7 @@ pnpm build
 Link the CLI globally while developing:
 
 ```bash
-pnpm --filter @devkit/cli link --global
+pnpm --filter @buzludeniz/devkit-cli link --global
 devkit --help
 ```
 

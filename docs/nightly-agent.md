@@ -22,7 +22,7 @@ supporting 2–3 depending on scope). Reports, formatting, and version bumps nev
 
 ## Requirements
 
-- Node.js 20 or newer and pnpm 9.
+- Node.js 22 or newer and pnpm 9.
 - An authenticated OpenCode installation (`opencode auth login`).
 - A GitHub credential in the Windows Credential Manager for `https://github.com`, with permission to
   push and open pull requests. The runner reads it with `git credential fill` and keeps it in memory.

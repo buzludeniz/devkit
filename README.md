@@ -13,13 +13,13 @@ pipeline runs ten maintenance tasks that each inspect the repository and commit 
 
 | Package | Purpose |
 | --- | --- |
-| `@devkit/core` | Shared types, errors, `Result<T, E>` helpers and configuration loaders |
-| `@devkit/cli` | The `devkit` command line interface |
+| `@buzludeniz/devkit-core` | Shared types, errors, `Result<T, E>` helpers and configuration loaders |
+| `@buzludeniz/devkit-cli` | The `devkit` command line interface |
 
-### Using `@devkit/core`
+### Using `@buzludeniz/devkit-core`
 
 ```typescript
-import { ok, err, unwrap, loadDevKitConfig, type Result } from "@devkit/core";
+import { ok, err, unwrap, loadDevKitConfig, type Result } from "@buzludeniz/devkit-core";
 
 // Typed result handling without exceptions
 const res: Result<string> = ok("success");
@@ -46,8 +46,11 @@ devkit plugin:load ./plugin.mjs --run      # load an external plugin
 ## Install
 
 ```bash
-npm install --global @devkit/cli
+npm install --global @buzludeniz/devkit-cli
 ```
+
+The package is published under the `@buzludeniz` scope (the `@devkit` npm scope belongs to an
+unrelated project). Until the first release is published, run it from source.
 
 Or run it from source:
 
@@ -117,7 +120,7 @@ docs/                   VitePress site and generated reports
 
 ## Development
 
-Requires Node 20 or newer and pnpm 9.
+Requires Node 22 or newer and pnpm 9.
 
 ```bash
 pnpm install

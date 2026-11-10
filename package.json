@@ -15,12 +15,12 @@
     "url": "https://github.com/buzludeniz/devkit/issues"
   },
   "scripts": {
-    "dev": "pnpm --filter @devkit/cli dev",
-    "build": "pnpm --filter @devkit/core build && pnpm --filter @devkit/cli build",
+    "dev": "pnpm --filter @buzludeniz/devkit-cli dev",
+    "build": "pnpm --filter @buzludeniz/devkit-core build && pnpm --filter @buzludeniz/devkit-cli build",
     "lint": "biome check packages scripts",
     "lint:fix": "biome check --write --unsafe packages scripts",
-    "test": "pnpm --filter @devkit/core test && pnpm --filter @devkit/cli test && vitest run",
-    "typecheck": "pnpm --filter @devkit/core typecheck && pnpm --filter @devkit/cli typecheck && tsc -p scripts/tsconfig.json",
+    "test": "pnpm --filter @buzludeniz/devkit-core test && pnpm --filter @buzludeniz/devkit-cli test && vitest run",
+    "typecheck": "pnpm --filter @buzludeniz/devkit-core typecheck && pnpm --filter @buzludeniz/devkit-cli typecheck && tsc -p scripts/tsconfig.json",
     "nightly:maintenance": "tsx scripts/run-nightly.ts",
     "nightly:verify": "tsx scripts/nightly-verify.ts",
     "nightly:agent": "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/nightly-agent.ps1",
@@ -43,7 +43,7 @@
     "yaml": "^2.9.1"
   },
   "engines": {
-    "node": ">=20.0.0"
+    "node": ">=22.0.0"
   },
   "packageManager": "pnpm@9.0.0",
   "publishConfig": {

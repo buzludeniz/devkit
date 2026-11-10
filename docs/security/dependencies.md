@@ -21,13 +21,13 @@ version drift and unexpected packages are easy to spot in review.
 | `vitest` | `^2.1.0` |
 | `yaml` | `^2.9.1` |
 
-## @devkit/cli
+## @buzludeniz/devkit-cli
 
 ### dependencies
 
 | Package | Version |
 | --- | --- |
-| `@devkit/core` | `workspace:*` |
+| `@buzludeniz/devkit-core` | `workspace:*` |
 | `commander` | `^12.1.0` |
 
 ### devDependencies
@@ -40,7 +40,7 @@ version drift and unexpected packages are easy to spot in review.
 | `typescript` | `^5.6.0` |
 | `vitest` | `^2.1.0` |
 
-## @devkit/core
+## @buzludeniz/devkit-core
 
 ### devDependencies
 

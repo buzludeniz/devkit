@@ -5,7 +5,7 @@ status: ready
 area: packages/core
 ---
 
-# Add structured logger and color helper to `@devkit/core`
+# Add structured logger and color helper to `@buzludeniz/devkit-core`
 
 ## Context
 
@@ -24,4 +24,4 @@ CLI commands currently print directly via `console.log` with inconsistent prefix
 
 ## Documentation
 
-- Add `@devkit/core` logger documentation to `README.md`.
+- Add `@buzludeniz/devkit-core` logger documentation to `README.md`.

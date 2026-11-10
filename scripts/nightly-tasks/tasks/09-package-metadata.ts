@@ -33,7 +33,7 @@ export function metadataDefaults(directory?: string): MetadataDefaults {
     repository,
     homepage: `${REPOSITORY_URL}#readme`,
     bugs: { url: `${REPOSITORY_URL}/issues` },
-    engines: { node: ">=20.0.0" },
+    engines: { node: ">=22.0.0" },
     publishConfig: { access: "public" },
   };
 }
