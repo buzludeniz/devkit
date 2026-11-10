@@ -144,7 +144,12 @@ block.
 
 ```bash
 devkit docs:generate --source packages --output docs/generated/api.md
+devkit docs:generate --source packages --dry-run
 ```
+
+With `--dry-run`, nothing is written. The command logs the output file it would
+touch: `Would create <file>`, `Would modify <file>`, or `Unchanged <file>` when
+the page is already up to date, followed by the export count. It exits 0.
 
 ## Release
 
@@ -159,6 +164,16 @@ devkit release:changelog --from v0.1.0 --output CHANGELOG.next.md
 
 Internal types (`chore`, `ci`, `test`, `style`, `build`) are omitted unless
 `--all` is passed. Breaking changes are always included.
+
+`--dry-run` together with `--output <file>` prints a line diff between the
+current file (or `/dev/null` when it does not exist) and the changelog that
+would be written, then `Dry run: <file> was not written`. The file is not
+created or modified, and the command exits 0. Without `--output` the changelog
+already goes to stdout, so `--dry-run` changes nothing.
+
+```bash
+devkit release:changelog --from v0.1.0 --version 0.2.0 --output CHANGELOG.md --dry-run
+```
 
 ### `devkit version`
 
