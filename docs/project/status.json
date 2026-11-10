@@ -8,7 +8,7 @@
       "sourceFiles": 20,
       "sourceLines": 1384,
       "testFiles": 16,
-      "testCases": 84
+      "testCases": 86
     },
     {
       "name": "@buzludeniz/devkit-core",
@@ -23,10 +23,10 @@
   "totals": {
     "packages": 2,
     "sourceFiles": 46,
-    "sourceLines": 3372,
+    "sourceLines": 3370,
     "testFiles": 28,
-    "testCases": 135,
-    "documentationFiles": 85
+    "testCases": 137,
+    "documentationFiles": 86
   },
   "scripts": {
     "dev": "pnpm --filter @buzludeniz/devkit-cli dev",

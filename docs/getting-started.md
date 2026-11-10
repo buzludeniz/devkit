@@ -7,8 +7,8 @@ generation and changelog drafting.
 
 ## Requirements
 
-- Node.js 22 or newer
-- pnpm 9
+- Node.js 22.12 or newer
+- pnpm 12
 
 ## Install from source
 

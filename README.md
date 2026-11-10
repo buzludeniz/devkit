@@ -121,7 +121,7 @@ docs/                   VitePress site and generated reports
 
 ## Development
 
-Requires Node 22 or newer and pnpm 9.
+Requires Node 22.12 or newer and pnpm 12.
 
 ```bash
 pnpm install

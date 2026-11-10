@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { CoreError } from "./index.js";
-import { type Result, err, ok, unwrap } from "./result.js";
+import { err, ok, type Result, unwrap } from "./result.js";
 
 describe("Result", () => {
   it("unwraps a successful ok result", () => {

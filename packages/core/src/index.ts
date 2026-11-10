@@ -10,5 +10,5 @@ export class CoreError extends Error {
   }
 }
 
-export * from "./result.js";
 export * from "./config.js";
+export * from "./result.js";
