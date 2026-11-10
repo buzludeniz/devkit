@@ -32,6 +32,12 @@ describe("createProgram", () => {
     expect(doctorCmd).toBeDefined();
   });
 
+  it("has template command registered with a list subcommand", () => {
+    const program = createProgram();
+    const templateCmd = program.commands.find((cmd) => cmd.name() === "template");
+    expect(templateCmd?.commands.map((cmd) => cmd.name())).toContain("list");
+  });
+
   it("keeps the root help output stable", () => {
     const program = createProgram().configureHelp({ helpWidth: 80 });
 
@@ -62,6 +68,7 @@ describe("createProgram", () => {
         "  plugin:load [options] <name>  Load a devkit plugin and validate its shape",
         "  config                        Read and write project settings in",
         "                                .devkitrc.json",
+        "  template                      Inspect built-in project templates",
         "  help [command]                display help for command",
         "",
       ].join("\n"),
