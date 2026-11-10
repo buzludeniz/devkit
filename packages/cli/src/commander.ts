@@ -11,6 +11,7 @@ import { helloCommand } from "./commands/hello.js";
 import { initCommand } from "./commands/init.js";
 import { pluginLoadCommand } from "./commands/plugin.js";
 import { releaseChangelogCommand } from "./commands/release.js";
+import { templateCommand } from "./commands/template.js";
 import { versionCommand } from "./commands/version.js";
 
 const require = createRequire(import.meta.url);
@@ -36,6 +37,7 @@ export function createProgram(): Command {
   program.addCommand(releaseChangelogCommand());
   program.addCommand(pluginLoadCommand());
   program.addCommand(configCommand());
+  program.addCommand(templateCommand());
 
   return program;
 }

@@ -17,7 +17,7 @@ export interface GenerateOptions {
   force?: boolean;
 }
 
-const TEMPLATES_DIR = fileURLToPath(new URL("./templates/", import.meta.url));
+export const TEMPLATES_DIR = fileURLToPath(new URL("./templates/", import.meta.url));
 
 const TEMPLATE_FILES: Record<string, Array<{ source: string; dest: string }>> = {
   "node-app": [{ source: "node-app.json", dest: "package.json" }],
