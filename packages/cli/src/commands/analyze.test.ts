@@ -1,14 +1,14 @@
 import { promises as fs } from "node:fs";
 import os from "node:os";
 import path from "node:path";
-import { type MockInstance, afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, type MockInstance, vi } from "vitest";
 import { analyzeCommand } from "./analyze.js";
 
 describe("devkit analyze", () => {
   let tempDir: string;
   let file: string;
-  let logSpy: ReturnType<typeof vi.spyOn>;
-  let errorSpy: ReturnType<typeof vi.spyOn>;
+  let logSpy: MockInstance<typeof console.log>;
+  let errorSpy: MockInstance<typeof console.error>;
   let exitSpy: MockInstance<typeof process.exit>;
 
   beforeEach(async () => {

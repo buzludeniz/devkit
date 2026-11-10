@@ -1,6 +1,6 @@
-import { type MockInstance, afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import type { GitStatus } from "./git-status.js";
+import { afterEach, beforeEach, describe, expect, it, type MockInstance, vi } from "vitest";
 import { gitCommand } from "./git.js";
+import type { GitStatus } from "./git-status.js";
 
 const { getGitStatusMock } = vi.hoisted(() => ({ getGitStatusMock: vi.fn() }));
 
@@ -15,8 +15,8 @@ const dirtyStatus: GitStatus = {
 };
 
 describe("devkit git status", () => {
-  let logSpy: ReturnType<typeof vi.spyOn>;
-  let errorSpy: ReturnType<typeof vi.spyOn>;
+  let logSpy: MockInstance<typeof console.log>;
+  let errorSpy: MockInstance<typeof console.error>;
   let exitSpy: MockInstance<typeof process.exit>;
 
   beforeEach(() => {
