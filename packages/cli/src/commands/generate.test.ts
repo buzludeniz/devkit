@@ -145,7 +145,7 @@ describe("generateProject", () => {
     await expect(fs.access(packageJson)).resolves.toBeUndefined();
   });
 
-  it("overwrites an existing package.json when force is true", async () => {
+  it("overwrites an existing package.json with the new project name when force is true", async () => {
     const packageJson = path.join(tempDir, "package.json");
     await fs.writeFile(packageJson, '{"name":"original"}', "utf-8");
 
