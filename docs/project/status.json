@@ -5,28 +5,28 @@
       "name": "@buzludeniz/devkit-cli",
       "version": "0.1.0",
       "description": "CLI entry point for devkit",
-      "sourceFiles": 17,
-      "sourceLines": 879,
-      "testFiles": 12,
-      "testCases": 44
+      "sourceFiles": 20,
+      "sourceLines": 1384,
+      "testFiles": 16,
+      "testCases": 84
     },
     {
       "name": "@buzludeniz/devkit-core",
       "version": "0.1.0",
       "description": "Core utilities and shared types for devkit",
-      "sourceFiles": 3,
-      "sourceLines": 31,
-      "testFiles": 1,
-      "testCases": 1
+      "sourceFiles": 5,
+      "sourceLines": 119,
+      "testFiles": 3,
+      "testCases": 8
     }
   ],
   "totals": {
     "packages": 2,
-    "sourceFiles": 39,
-    "sourceLines": 2541,
-    "testFiles": 20,
-    "testCases": 75,
-    "documentationFiles": 19
+    "sourceFiles": 46,
+    "sourceLines": 3372,
+    "testFiles": 28,
+    "testCases": 135,
+    "documentationFiles": 85
   },
   "scripts": {
     "dev": "pnpm --filter @buzludeniz/devkit-cli dev",
@@ -36,6 +36,8 @@
     "test": "pnpm --filter @buzludeniz/devkit-core test && pnpm --filter @buzludeniz/devkit-cli test && vitest run",
     "typecheck": "pnpm --filter @buzludeniz/devkit-core typecheck && pnpm --filter @buzludeniz/devkit-cli typecheck && tsc -p scripts/tsconfig.json",
     "nightly:maintenance": "tsx scripts/run-nightly.ts",
+    "nightly:verify": "tsx scripts/nightly-verify.ts",
+    "nightly:agent": "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/nightly-agent.ps1",
     "docs:dev": "vitepress dev docs",
     "docs:build": "vitepress build docs",
     "docs:preview": "vitepress preview docs",

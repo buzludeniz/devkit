@@ -30,4 +30,10 @@ describe("createProgram", () => {
     const doctorCmd = program.commands.find((cmd) => cmd.name() === "doctor");
     expect(doctorCmd).toBeDefined();
   });
+
+  it("has template command registered with a list subcommand", () => {
+    const program = createProgram();
+    const templateCmd = program.commands.find((cmd) => cmd.name() === "template");
+    expect(templateCmd?.commands.map((cmd) => cmd.name())).toContain("list");
+  });
 });

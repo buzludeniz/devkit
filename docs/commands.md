@@ -25,6 +25,25 @@ a `CoreError` with code `EEXIST` before writing anything unless `force: true`
 is set. Every write is skipped when the guard throws, so a failed run leaves
 the target directory untouched.
 
+### `devkit template list`
+
+List the built-in project templates for `devkit init --template`, with the
+description stored in each template file.
+
+```bash
+devkit template list
+devkit template list --json
+```
+
+```text
+node-app   A new Node.js application
+react-app  A new React application
+```
+
+With `--json`, the command prints only an array of `{ name, description }`
+objects. Template files that are not valid JSON or have no `description` are
+skipped instead of failing the command.
+
 ### `devkit config`
 
 Read and write project settings in `.devkitrc.json` in the current directory.

@@ -1,6 +1,7 @@
 {
   "name": "{{name}}",
   "version": "0.1.0",
+  "description": "A new React application",
   "private": true,
   "dependencies": {
     "react": "^18.3.0",
