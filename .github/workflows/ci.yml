@@ -17,17 +17,17 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        node: [20, 22]
+        node: [22, 24]
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
 
       - name: Setup pnpm
-        uses: pnpm/action-setup@v4
+        uses: pnpm/action-setup@v6
 
       - name: Setup Node.js ${{ matrix.node }}
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v7
         with:
           node-version: ${{ matrix.node }}
           cache: pnpm
@@ -46,3 +46,11 @@ jobs:
 
       - name: Build
         run: pnpm build
+
+      - name: Smoke-test the built CLI
+        run: |
+          node packages/cli/dist/index.js --help
+          node packages/cli/dist/index.js --version
+          SMOKE_DIR="$(mktemp -d)"
+          node packages/cli/dist/index.js init --name smoke-app --template node-app --dir "$SMOKE_DIR"
+          node -e 'const p = require(process.argv[1]); if (p.name !== "smoke-app") { console.error(p); process.exit(1); }' "$SMOKE_DIR/package.json"

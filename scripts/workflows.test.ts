@@ -56,6 +56,18 @@ describe("GitHub Actions workflows", () => {
     expect(push).toBeGreaterThan(gate);
   });
 
+  it("tests supported Node versions and smoke-tests the built CLI", async () => {
+    const workflows = await loadWorkflows();
+    const ci = workflows.find((workflow) => workflow.file === "ci.yml");
+
+    const serialised = JSON.stringify(ci?.document);
+    expect(serialised).toContain('"node":[22,24]');
+
+    const build = serialised.indexOf("pnpm build");
+    const smoke = serialised.indexOf("node packages/cli/dist/index.js --help");
+    expect(smoke).toBeGreaterThan(build);
+  });
+
   it("publishes with Changesets when main moves", async () => {
     const workflows = await loadWorkflows();
     const release = workflows.find((workflow) => workflow.file === "release.yml");
