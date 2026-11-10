@@ -55,6 +55,7 @@ Estimate cyclomatic complexity for a TypeScript file.
 
 ```bash
 devkit analyze ./src/index.ts
+devkit analyze ./src/index.ts --json
 ```
 
 The score is the number of decision points plus one. Decision points cover
@@ -62,6 +63,10 @@ The score is the number of decision points plus one. Decision points cover
 chaining and ternaries. Comments and the contents of single-quoted,
 double-quoted and template string literals are ignored, and each branch of an
 `else if` chain counts once.
+
+With `--json`, the command prints only a JSON object with the keys `file`,
+`score`, `lines` and `decisionPoints`. Errors still go to stderr with exit
+code 1.
 
 ## Configuration
 
@@ -98,6 +103,15 @@ unchanged.
 Show the current branch and staged, modified and untracked files. A file with
 both staged and unstaged changes appears in both lists. Renames are reported
 under their new path.
+
+```bash
+devkit git status
+devkit git status --json
+```
+
+With `--json`, the command prints only the status object (`clean`, `branch`,
+`staged`, `modified`, `untracked`) as JSON. Errors still go to stderr with exit
+code 1.
 
 ### `devkit git branches`
 

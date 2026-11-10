@@ -8,9 +8,14 @@ export function gitCommand(): Command {
   git
     .command("status")
     .description("Show working tree status")
-    .action(async () => {
+    .option("--json", "print the status as JSON")
+    .action(async (options: { json?: boolean }) => {
       try {
         const status = await getGitStatus();
+        if (options.json) {
+          console.log(JSON.stringify(status, null, 2));
+          return;
+        }
         console.log(`Branch: ${status.branch}`);
         console.log(`Clean: ${status.clean}`);
         if (status.staged.length) console.log(`Staged: ${status.staged.join(", ")}`);
