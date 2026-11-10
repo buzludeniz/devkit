@@ -1,8 +1,14 @@
-import { mkdtemp, readFile, rm, writeFile } from "node:fs/promises";
+import { mkdtemp, readFile, rm, stat, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
-import { afterEach, describe, expect, it } from "vitest";
-import { extractDocEntries, generateDocs, renderDocs, writeDocs } from "./docs.js";
+import { afterEach, describe, expect, it, vi } from "vitest";
+import {
+  docsGenerateCommand,
+  extractDocEntries,
+  generateDocs,
+  renderDocs,
+  writeDocs,
+} from "./docs.js";
 
 const created: string[] = [];
 
@@ -81,6 +87,65 @@ describe("generateDocs", () => {
     const count = await writeDocs(directory, output);
 
     expect(count).toBe(2);
+    await expect(readFile(output, "utf8")).resolves.toContain("### `add` (function)");
+  });
+});
+
+describe("devkit docs:generate --dry-run", () => {
+  async function setup(): Promise<{ directory: string; output: string }> {
+    const directory = await mkdtemp(join(tmpdir(), "devkit-docs-dry-"));
+    created.push(directory);
+    await writeFile(join(directory, "index.ts"), SOURCE, "utf8");
+    return { directory, output: join(directory, "generated", "api.md") };
+  }
+
+  async function run(args: string[]): Promise<string> {
+    const logSpy = vi.spyOn(console, "log").mockImplementation(() => {});
+    try {
+      await docsGenerateCommand().parseAsync(["node", "docs:generate", ...args]);
+      return logSpy.mock.calls.map((call) => call.join(" ")).join("\n");
+    } finally {
+      logSpy.mockRestore();
+    }
+  }
+
+  it("logs the file it would create without creating it or its directory", async () => {
+    const { directory, output } = await setup();
+
+    const stdout = await run(["--source", directory, "--output", output, "--dry-run"]);
+
+    expect(stdout).toBe(`Would create ${output} (2 exports)`);
+    await expect(stat(join(directory, "generated"))).rejects.toMatchObject({ code: "ENOENT" });
+  });
+
+  it("logs the file it would modify and leaves its contents and mtime untouched", async () => {
+    const { directory, output } = await setup();
+    await writeDocs(directory, output);
+    await writeFile(output, "stale\n", "utf8");
+    const before = await stat(output);
+
+    const stdout = await run(["--source", directory, "--output", output, "--dry-run"]);
+
+    expect(stdout).toBe(`Would modify ${output} (2 exports)`);
+    await expect(readFile(output, "utf8")).resolves.toBe("stale\n");
+    expect((await stat(output)).mtimeMs).toBe(before.mtimeMs);
+  });
+
+  it("reports an up-to-date file as unchanged", async () => {
+    const { directory, output } = await setup();
+    await writeDocs(directory, output);
+
+    const stdout = await run(["--source", directory, "--output", output, "--dry-run"]);
+
+    expect(stdout).toBe(`Unchanged ${output} (2 exports)`);
+  });
+
+  it("still writes the file without --dry-run", async () => {
+    const { directory, output } = await setup();
+
+    const stdout = await run(["--source", directory, "--output", output]);
+
+    expect(stdout).toBe(`Documented 2 exports in ${output}`);
     await expect(readFile(output, "utf8")).resolves.toContain("### `add` (function)");
   });
 });

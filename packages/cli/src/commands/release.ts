@@ -1,7 +1,8 @@
 import { execFile } from "node:child_process";
-import { writeFile } from "node:fs/promises";
+import { readFile, writeFile } from "node:fs/promises";
 import { promisify } from "node:util";
 import { Command } from "commander";
+import { renderFileDiff } from "./file-diff.js";
 
 const execFileAsync = promisify(execFile);
 
@@ -131,6 +132,15 @@ export async function readCommits(
   return entries;
 }
 
+async function readExisting(path: string): Promise<string | null> {
+  try {
+    return await readFile(path, "utf8");
+  } catch (error) {
+    if ((error as NodeJS.ErrnoException).code === "ENOENT") return null;
+    throw error;
+  }
+}
+
 export function releaseChangelogCommand(): Command {
   return new Command("release:changelog")
     .description("Generate a changelog from Conventional Commits")
@@ -139,6 +149,7 @@ export function releaseChangelogCommand(): Command {
     .option("--version <label>", "version heading", "Unreleased")
     .option("--all", "include internal commits", false)
     .option("-o, --output <file>", "write the changelog to a file")
+    .option("--dry-run", "with --output, print the planned diff instead of writing the file", false)
     .action(
       async (options: {
         from: string;
@@ -146,12 +157,21 @@ export function releaseChangelogCommand(): Command {
         version: string;
         all: boolean;
         output?: string;
+        dryRun: boolean;
       }) => {
         const entries = await readCommits(options.from, options.to);
         const changelog = buildChangelog(entries, {
           version: options.version,
           includeInternal: options.all,
         });
+
+        if (options.output && options.dryRun) {
+          console.log(
+            renderFileDiff(options.output, await readExisting(options.output), changelog),
+          );
+          console.log(`Dry run: ${options.output} was not written (${entries.length} commits)`);
+          return;
+        }
 
         if (options.output) {
           await writeFile(options.output, changelog, "utf8");

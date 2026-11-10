@@ -120,12 +120,53 @@ export async function writeDocs(root: string, outputPath: string): Promise<numbe
   return entries.length;
 }
 
+export interface DocsPlan {
+  /** Output file the command would write. */
+  path: string;
+  /** `create` for a missing file, `modify` for different contents, `unchanged` otherwise. */
+  action: "create" | "modify" | "unchanged";
+  /** Number of documented exports in the rendered page. */
+  count: number;
+}
+
+/**
+ * Works out what `writeDocs` would do without touching the disk; used by
+ * `devkit docs:generate --dry-run`.
+ */
+export async function planDocs(root: string, outputPath: string): Promise<DocsPlan> {
+  const entries = await generateDocs(root);
+  const rendered = renderDocs(entries);
+
+  let current: string | null = null;
+  try {
+    current = await readFile(outputPath, "utf8");
+  } catch (error) {
+    if ((error as NodeJS.ErrnoException).code !== "ENOENT") throw error;
+  }
+
+  const action = current === null ? "create" : current === rendered ? "unchanged" : "modify";
+  return { path: outputPath, action, count: entries.length };
+}
+
+const PLAN_LABELS: Record<DocsPlan["action"], string> = {
+  create: "Would create",
+  modify: "Would modify",
+  unchanged: "Unchanged",
+};
+
 export function docsGenerateCommand(): Command {
   return new Command("docs:generate")
     .description("Generate Markdown API documentation from documented exports")
     .option("-s, --source <dir>", "directory to scan", ".")
     .option("-o, --output <file>", "output Markdown file", "docs/generated/api.md")
-    .action(async (options: { source: string; output: string }) => {
+    .option("--dry-run", "log the file that would be written without touching the disk", false)
+    .action(async (options: { source: string; output: string; dryRun: boolean }) => {
+      if (options.dryRun) {
+        const plan = await planDocs(options.source, options.output);
+        console.log(`${PLAN_LABELS[plan.action]} ${plan.path} (${plan.count} exports)`);
+        return;
+      }
+
       const count = await writeDocs(options.source, options.output);
       console.log(`Documented ${count} exports in ${options.output}`);
     });
